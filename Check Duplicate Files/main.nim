@@ -27,3 +27,18 @@ proc get_all_files(path: string): seq[string] =
         if kind == pcFile:
             result.add(f)
 
+proc find_duplicates(folder: string): Table[string, seq[string]] = 
+    let files = get_all_files(folder)
+    var hash_map = initTable[string, seq[string]]()
+
+    for file in files:
+        try:
+            let hash = file_hash(file)
+            hash_map.mgetOrPut(hash, @[]).add(file)
+        except IOError:
+            echo "⚠️ Skipping unreadable file: ", file
+    
+    for k, v in hash_map.pairs:
+        if v.len > 1:
+            result[k] = v
+            
