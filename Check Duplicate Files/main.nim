@@ -21,4 +21,9 @@ proc file_hash(path: string): string =
 
         let digest = ctx.finish()
         result = toHex(digest.data, lowercase=true)
-        
+
+proc get_all_files(path: string): seq[string] = 
+    for kind, f in walkDir(path, relative = false):
+        if kind == pcFile:
+            result.add(f)
+
