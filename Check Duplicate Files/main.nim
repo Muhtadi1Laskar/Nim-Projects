@@ -17,10 +17,10 @@ proc file_hash(path: string): string =
         let read = stream.readData(buffer.addr, ChunkSize)
         if read > 0:
             ctx.update(buffer[0 ..< read])
-        stream.close()
+    stream.close()
 
-        let digest = ctx.finish()
-        result = toHex(digest.data, lowercase=true)
+    let digest = ctx.finish()
+    result = toHex(digest.data, lowercase=true)
 
 proc get_all_files(path: string): seq[string] = 
     for kind, f in walkDir(path, relative = false):
