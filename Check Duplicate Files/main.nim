@@ -47,8 +47,6 @@ when isMainModule:
     let targetDir = "./Data"  # 🔁 Replace with your directory
     let duplicates = find_duplicates(targetDir)
 
-    echo duplicates
-
     if duplicates.len == 0:
         echo "✅ No duplicate files found!"
     else:
