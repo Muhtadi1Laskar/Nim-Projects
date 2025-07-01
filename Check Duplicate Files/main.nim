@@ -41,4 +41,19 @@ proc find_duplicates(folder: string): Table[string, seq[string]] =
     for k, v in hash_map.pairs:
         if v.len > 1:
             result[k] = v
-            
+
+
+when isMainModule:
+    let targetDir = "./Data"  # 🔁 Replace with your directory
+    let duplicates = find_duplicates(targetDir)
+
+    echo duplicates
+
+    if duplicates.len == 0:
+        echo "✅ No duplicate files found!"
+    else:
+        echo "🗂️ Duplicate Files Found:"
+    for k, files in duplicates.pairs:
+        echo "\n🔑 Hash: ", k
+        for f in files:
+            echo "  - ", f
