@@ -42,7 +42,6 @@ proc find_duplicates(folder: string): Table[string, seq[string]] =
         if v.len > 1:
             result[k] = v
 
-
 when isMainModule:
     let targetDir = "./Data"  # 🔁 Replace with your directory
     let duplicates = find_duplicates(targetDir)
