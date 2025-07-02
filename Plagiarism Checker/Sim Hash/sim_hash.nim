@@ -1,5 +1,6 @@
-import std/[strutils, sequtils, math, re, bitops]
+import std/[os, streams, strutils, sequtils, math, re, bitops]
 import nimcrypto
+import ../../Common/FileOperations
 
 proc hash64(word: string): uint64 =
     let digest = sha256.digest(word)
@@ -30,8 +31,10 @@ proc hamming_distance(a, b: uint64): int =
   popcount(a xor b)
 
 proc check_plagiarism(doc1, doc2: string): string =
-  let hash_one = sim_hash(doc1)
-  let hash_two = sim_hash(doc2)
+  let text_one = FileOperations.read_file(doc1)
+  let text_two = FileOperations.read_file(doc2)
+  let hash_one = sim_hash(text_one)
+  let hash_two = sim_hash(text_two)
   let score = hamming_distance(hash_one, hash_two)
 
   if score >= 0 and score <= 3:
@@ -45,13 +48,13 @@ proc check_plagiarism(doc1, doc2: string): string =
   else:
     result = "No content"
     
-    
+
 when isMainModule:
   let
-    doc1 = "The quick fox jumps over the lazy dog"
-    doc2 = "The quick dox leaps over the lazy bitch"
-    doc3 = "Python is a popular programming language"
+    doc1 = "../Data/test1.txt"
+    doc2 = "../Data/test2.txt"
+    doc3 = "../Data/test3.txt"
 
   echo ""
 
-  echo check_plagiarism(doc1, doc2)
+  echo check_plagiarism(doc2, doc1)

@@ -1,0 +1,20 @@
+This is data
+This is more data
+This is the last line
+This is the end of the file
+Generate some dummy data
+This is a test file
+This file is used for testing purposes
+It contains multiple lines of text
+The data is not important.
+This is just a sample file
+This is a sample text file
+This is a test file for reading
+This is another line of text
+This is a sample line
+This is a test line
+Generate a large amount of text data
+This is a new line of text.
+This is another sample line of text.
+This is a test line for the file.
+This is a sample text for testing.
