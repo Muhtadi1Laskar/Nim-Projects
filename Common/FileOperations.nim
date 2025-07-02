@@ -32,6 +32,6 @@ proc read_bytes*(path: string): seq[byte] =
     return result
 
 proc get_all_files*(path: string): seq[string] = 
-    for kind, f in walkDir(path, relative = true):
+    for kind, f in walkDir(path):
         if kind == pcFile:
-            result.add("Data\\" & f)
+            result.add(f)
