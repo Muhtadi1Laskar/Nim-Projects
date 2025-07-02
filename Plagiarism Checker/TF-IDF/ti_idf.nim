@@ -80,29 +80,25 @@ proc cosine_similarity(vec1, vec2: Table[string, float]): float =
   if mag1 == 0 or mag2 == 0: return 0.0
   result = dot / (mag1 * mag2)
 
-
 when isMainModule:
+    let all_files_paths = FileOperations.get_all_files("../Data/")
     let input_data = FileOperations.read_file("../Data/Input-Data/input.txt")
-    let data_one = FileOperations.read_file("../Data/test1.txt")
-    let data_two = FileOperations.read_file("../Data/test2.txt")
-    let data_three = FileOperations.read_file("../Data/test3.txt")
-    let data_four = FileOperations.read_file("../Data/test4.txt")
-    let data_five = FileOperations.read_file("../Data/test5.txt")
-
-
     let input_data_clean = remove_stopwords(tokenize(input_data))
-    let data_one_clean = remove_stopwords(tokenize(data_one))
-    let data_two_clean = remove_stopwords(tokenize(data_two))
-    let data_three_clean = remove_stopwords(tokenize(data_three))
-    let data_four_clean = remove_stopwords(tokenize(data_four))
-    let data_five_clean = remove_stopwords(tokenize(data_five))
 
-    var corpus: seq[seq[string]] = @[data_one_clean, data_two_clean, data_three_clean, data_four_clean, data_five_clean]
+    var corpus: seq[seq[string]]
+    for path in all_files_paths:
+        let data = FileOperations.read_file(path)
+        let clean_data = remove_stopwords(tokenize(data))
+
+        corpus.add(clean_data)
+
+    
     let idf = calculate_IDF(corpus)
-
     let input_tf_idf = calculate_TF_IDF(input_data_clean, idf)
 
-    for doc in corpus:
+    echo " "
+
+    for i, doc in corpus:
         let corpus_tf_idf = calculate_TF_IDF(doc, idf)
         let similarity = cosine_similarity(input_tf_idf, corpus_tf_idf)
-        echo "Similarity Score: ", similarity * 100
+        echo "File: ", all_files_paths[i], " | Similarity Score: ", similarity * 100, "%"
