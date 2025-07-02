@@ -61,7 +61,7 @@ when isMainModule:
     echo " "
 
     for path in paths:
-        var text = FileOperations.read_bytes(path, chunk_size)
+        var text = FileOperations.read_bytes(path)
         hash_table[path] = hash_bytes(hash_algorithm, text)
 
     for key, value in hash_table:
