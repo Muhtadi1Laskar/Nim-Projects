@@ -62,11 +62,15 @@ proc hash_bytes(algorithm = "sha256", data: openArray[byte]): string =
     of "sha3_512":      result = toHex(sha3_512.digest(data).data, lowercase=true)
     of "shake128":      result = toHex(shake128.digest(data).data, lowercase=true)
     of "shake256":      result = toHex(shake256.digest(data).data, lowercase=true)
+    of "blake2_224":      result = toHex(blake2_224.digest(data).data, lowercase=true)
+    of "blake2_256":      result = toHex(blake2_256.digest(data).data, lowercase=true)
+    of "blake2_384":      result = toHex(blake2_384.digest(data).data, lowercase=true)
+    of "blake2_512":      result = toHex(blake2_512.digest(data).data, lowercase=true)
     else:               result = "Invalid hash algorithm"
 
 when isMainModule:
     let paths: seq[string] = get_files_name("Data")
-    let hash_algorithm  = "shake256"
+    let hash_algorithm  = "blake2_512"
     var hash_table: Table[string, string] = initTable[string, string]()
 
     echo " "
