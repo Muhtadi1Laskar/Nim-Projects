@@ -15,6 +15,21 @@ proc count_frequency(data:seq[string]): Table[string, int] =
     
     return result
 
+proc calculate_tf(words: seq[string]): Table[string, float] = 
+    var tf = initTable[string, float64]()
+    var total_words = float(len(words))
+
+    for word in words:
+        if not tf.hasKey(word):
+            tf[word] = 1
+        else:
+            tf[word] += 1
+    
+    for key, value in tf:
+        tf[key] /= total_words
+    
+    return tf
+
 proc remove_stopwords(data_seq: seq[string]): seq[string] = 
     var result: seq[string] = @[]
     let stop_words = {
@@ -33,7 +48,10 @@ proc remove_stopwords(data_seq: seq[string]): seq[string] =
 
 when isMainModule:
     let data = FileOperations.read_file("../Data/test1.txt")
-    let tokenized = tokenize(data)
-    let clean_text = remove_stopwords(tokenized)
+    let clean_text = remove_stopwords(tokenize(data))
+    var corpuse: seq[seq[string]] = @[clean_text]
 
-    echo count_frequency(clean_text)
+    # echo count_frequency(clean_text)
+    var tf = calculate_tf(clean_text)
+
+    echo tf["gatsby"] 
