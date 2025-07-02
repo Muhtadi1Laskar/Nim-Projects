@@ -29,19 +29,29 @@ proc sim_hash(text: string): uint64 =
 proc hamming_distance(a, b: uint64): int =
   popcount(a xor b)
 
+proc check_plagiarism(doc1, doc2: string): string =
+  let hash_one = sim_hash(doc1)
+  let hash_two = sim_hash(doc2)
+  let score = hamming_distance(hash_one, hash_two)
+
+  if score >= 0 and score <= 3:
+    result = "Nearly identical or duplicates. Score: " & $score
+  elif score >= 4 and score <= 20:
+    result = "Similar topics / paraphrases. Score: " & $score
+  elif score >= 11 and score <= 20:
+    result = "Some share concepts. Score: " & $score
+  elif score >= 21:
+    result = "Very different content. Score: " & $score
+  else:
+    result = "No content"
+    
+    
 when isMainModule:
   let
-    doc1 = "The quick brown fox jumps over the lazy dog"
-    doc2 = "The quick brown fdox leaps overs the lazy dogs"
+    doc1 = "The quick fox jumps over the lazy dog"
+    doc2 = "The quick dox leaps over the lazy bitch"
     doc3 = "Python is a popular programming language"
 
-  let hash1 = sim_hash(doc1)
-  let hash2 = sim_hash(doc2)
-  let hash3 = sim_hash(doc3)
-
   echo ""
-  echo "Hash ", hash1
-  echo "Hash ", hash2
-  echo "Hash ", hash3
 
-  echo hamming_distance(hash1, hash2)
+  echo check_plagiarism(doc1, doc2)
