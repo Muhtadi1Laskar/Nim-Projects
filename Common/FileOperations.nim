@@ -14,13 +14,13 @@ proc read_file*(path: string): string =
     
     return result.strip()
 
-proc read_bytes*(path: string): seq[byte] = 
+proc read_bytes*(path: string, chunk_size: int): seq[byte] = 
     var stream = newFileStream(path, fmRead)
     if stream == nil:
         raise newException(IOError, "❌ Failed to open file: " & path)
 
     var result: seq[byte] = @[]
-    var buffer: array[8192, byte]
+    var buffer: array[chunk_size, byte]
 
     while not stream.atEnd():
         let read = stream.readData(buffer.addr, buffer.len)
