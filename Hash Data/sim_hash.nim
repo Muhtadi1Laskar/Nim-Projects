@@ -14,23 +14,22 @@ proc simHash(text: string): uint64 =
   let
     words = text
       .toLowerAscii()
-      .replace(re"[^\w\s]", "")  # remove punctuation
+      .replace(re"[^\w\s]", "")
       .splitWhitespace()
 
   if words.len == 0:
-    return 0'u64  # Edge case: empty input
+    return 0'u64 
 
   var vector = newSeq 
 
   for word in words:
     let h = hash64(word)
-    for i in 0 ..< 64:
-      if ((h shr i) and 1) == 1:
-        vector[i] += 1
-      else:
-        vector[i] -= 1
-
-  # Construct the final hash based on majority bit
+      for i in 0 ..< 64:
+        if ((h shr i) and 1) == 1:
+          vector[i] += 1
+        else:
+          vector[i] -= 1
+        
   var finalHash: uint64 = 0
   for i in 0 ..< 64:
     if vector[i] > 0:
