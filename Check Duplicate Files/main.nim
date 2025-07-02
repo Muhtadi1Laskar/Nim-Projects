@@ -1,6 +1,7 @@
 import os, strutils, tables, hashes
 import std/streams
 import nimcrypto
+import ../Common/FileOperations
 
 const ChunkSize = 8192
 
@@ -22,13 +23,8 @@ proc file_hash(path: string): string =
     let digest = ctx.finish()
     result = toHex(digest.data, lowercase=true)
 
-proc get_all_files(path: string): seq[string] = 
-    for kind, f in walkDir(path, relative = false):
-        if kind == pcFile:
-            result.add(f)
-
 proc find_duplicates(folder: string): Table[string, seq[string]] = 
-    let files = get_all_files(folder)
+    let files = FileOperations.get_all_files(folder)
     var hash_map = initTable[string, seq[string]]()
 
     for file in files:
@@ -43,7 +39,7 @@ proc find_duplicates(folder: string): Table[string, seq[string]] =
             result[k] = v
 
 when isMainModule:
-    let targetDir = "./Data"  # 🔁 Replace with your directory
+    let targetDir = "Data"  # 🔁 Replace with your directory
     let duplicates = find_duplicates(targetDir)
 
     if duplicates.len == 0:

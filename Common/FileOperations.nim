@@ -30,3 +30,8 @@ proc read_bytes*(path: string): seq[byte] =
     stream.close()
 
     return result
+
+proc get_all_files*(path: string): seq[string] = 
+    for kind, f in walkDir(path, relative = true):
+        if kind == pcFile:
+            result.add("Data\\" & f)
