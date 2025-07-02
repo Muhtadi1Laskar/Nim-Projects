@@ -13,4 +13,19 @@ proc read_file*(path: string): string =
         f.close()
     
     return result.strip()
-        
+
+proc read_bytes*(path: string): seq[byte] = 
+    var stream = newFileStream(path, fmRead)
+    if stream == nil:
+        raise newException(IOError, "❌ Failed to open file: " & path)
+
+    var result: seq[byte] = @[]
+    var buffer: array[8192, byte]
+
+    while not stream.atEnd():
+        let read = stream.readData(buffer.addr, buffer.len)
+        if read > 0:
+            result.add(buffer[0 ..< read])
+    stream.close()
+
+    return result

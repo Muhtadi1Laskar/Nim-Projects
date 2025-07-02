@@ -1,5 +1,6 @@
 import std/[os, streams, strutils, hashes, tables]
 import nimcrypto
+import ../Common/FileOperations
 
 const ChunkSize = 8192
 
@@ -27,22 +28,6 @@ proc hash_file(path: string): string =
 
     let digest = ctx.finish()
     result = toHex(digest.data, lowercase =  true)
-
-proc read_bytes(path: string): seq[byte] =
-    var stream = newFileStream(path, fmRead)
-    if stream == nil:
-        raise newException(IOError, "❌ Failed to open file: " & path)
-
-    var result: seq[byte] = @[]
-    var buffer: array[ChunkSize, byte]
-
-    while not stream.atEnd():
-        let read = stream.readData(buffer.addr, buffer.len)
-        if read > 0:
-            result.add(buffer[0 ..< read])
-
-    stream.close()
-    return result
 
 proc hash_bytes(algorithm = "sha256", data: openArray[byte]): string =
     case algorithm
@@ -76,7 +61,7 @@ when isMainModule:
     echo " "
 
     for path in paths:
-        var text = read_bytes(path)
+        var text = FileOperations.read_bytes(path)
         hash_table[path] = hash_bytes(hash_algorithm, text)
 
     for key, value in hash_table:
