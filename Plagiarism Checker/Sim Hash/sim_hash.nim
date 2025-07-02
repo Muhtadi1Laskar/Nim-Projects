@@ -20,10 +20,10 @@ proc sim_hash(text: string): uint64 =
   for word in words:
     let h = hash64(word)
     for i in 0 ..< 64:
-      vector[i] += ((h shr i) and 1).int * 2 - 1  # +1 for 1, -1 for 0
+      vector[i] += ((h shr i) and 1).int * 2 - 1
 
   for i in 0 ..< 64:
-    if vector[i] > 0:  # More 1s than 0s across all words
+    if vector[i] > 0:
       result = result or (1'u64 shl i)
 
 proc hamming_distance(n: uint64): int =
