@@ -52,12 +52,24 @@ proc hash_bytes(algorithm = "sha256", data: openArray[byte]): string =
     of "sha384":        result = toHex(sha384.digest(data).data, lowercase=true)
     of "sha512_224":    result = toHex(sha512_224.digest(data).data, lowercase=true)
     of "sha512_256":    result = toHex(sha512_256.digest(data).data, lowercase=true)
+    of "keccak224":     result = toHex(keccak224.digest(data).data, lowercase=true)
+    of "keccak256":     result = toHex(keccak256.digest(data).data, lowercase=true)
+    of "keccak384":     result = toHex(keccak384.digest(data).data, lowercase=true)
+    of "keccak512":     result = toHex(keccak512.digest(data).data, lowercase=true)
+    of "sha3_224":      result = toHex(sha3_224.digest(data).data, lowercase=true)
+    of "sha3_256":      result = toHex(sha3_256.digest(data).data, lowercase=true)
+    of "sha3_384":      result = toHex(sha3_384.digest(data).data, lowercase=true)
+    of "sha3_512":      result = toHex(sha3_512.digest(data).data, lowercase=true)
+    of "shake128":      result = toHex(shake128.digest(data).data, lowercase=true)
+    of "shake256":      result = toHex(shake256.digest(data).data, lowercase=true)
     else:               result = "Invalid hash algorithm"
 
 when isMainModule:
     let paths: seq[string] = get_files_name("Data")
-    let hash_algorithm  = "sha512_224"
+    let hash_algorithm  = "shake256"
     var hash_table: Table[string, string] = initTable[string, string]()
+
+    echo " "
 
     for path in paths:
         var text = read_bytes(path)
