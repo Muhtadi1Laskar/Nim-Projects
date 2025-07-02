@@ -1,8 +1,27 @@
 import std/[os, streams, strutils, sequtils, math, re, bitops, tables, sets]
 import ../../Common/FileOperations
 
+const stop_words = toHashSet([
+        "a", "an", "this", "the", "is", "are", "was", "were", "will", "be",
+        "in", "on", "at", "of", "for", "to", "from", "with",
+        "and", "or", "but", "not", "if", "then", "else",
+        "i", "you", "he", "she", "it", "we", "they", "my", "your", "his", "her",
+         "its", "our", "their",
+        "while", "that", "shes", "hes", "theirs", "didn't", "couldn't", "wasn't", "don't",
+        "weren't", "hadn't", "i'm", 
+        "you're", "what's", "you'd", "your's", "that's", "she'd", "i've", 
+    ])
+
 proc tokenize(data: string): seq[string] = 
-    result = data.toLowerAscii().replace(re"[^\w\s]", "").splitWhitespace()
+    let cleaned = data
+                  .toLowerAscii()
+                  .replace(re"[-]{2,}", " ")  
+    let tokenPattern = re"\b[\w'-]+\b"  
+
+    result = newSeq[string]()
+    for m in findAll(cleaned, tokenPattern):
+        if m != "-" and m != "'":
+            result.add(m)
 
 proc count_frequency(data:seq[string]): Table[string, int] = 
     var result = initTable[string, int]()
@@ -41,20 +60,16 @@ proc calculate_IDF(corpus: seq[seq[string]]): Table[string, float] =
     for word, df_count in df_table.pairs:
         result[word] = ln(total_docs / (1 + df_count.float))
 
+proc normalize_word(word: string): string =
+  result = word.toLowerAscii().strip(chars={'.', ',', '!', '?', ';', ':', '"', '\''})
 
 proc remove_stopwords(data_seq: seq[string]): seq[string] = 
     var result: seq[string] = @[]
-    let stop_words = {
-        "a": "", "an": "", "this": "", "the": "", "is": "", "are": "", "was": "", "were": "", "will": "", "be": "",
-        "in": "", "on": "", "at": "", "of": "", "for": "", "to": "", "from": "", "with": "",
-        "and": "", "or": "", "but": "", "not": "", "if": "", "then": "", "else": "",
-        "i": "", "you": "", "he": "", "she": "", "it": "", "we": "", "they": "", "my": "", "your": "", "his": "", "her": "", "its": "", "our": "", "their": "",
-        "while": "", "that": "", "shes": "", "hes": "", "theirs": ""
-    }.toTable
 
-    for ch in data_seq:
-        if not stop_words.hasKey(ch):
-            result.add(ch)
+    for word in data_seq:
+        let normalized = normalize_word(word)
+        if normalized.len > 0 and not stop_words.contains(normalized):
+            result.add(word)
 
     return result
 
@@ -67,4 +82,8 @@ when isMainModule:
     var tf = calculate_tf(clean_text)
     var idf = calculate_IDF(corpus)
 
-    echo tf
+    # for key, value in tf: 
+    #     echo key
+
+    # for word in clean_text:
+    #     echo word
