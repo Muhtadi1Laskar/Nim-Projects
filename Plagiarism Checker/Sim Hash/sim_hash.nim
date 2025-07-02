@@ -1,4 +1,4 @@
-import std/[strutils, sequtils, math, re]
+import std/[strutils, sequtils, math, re, bitops, strformat]
 import nimcrypto
 
 proc hash64(word: string): uint64 =
@@ -26,26 +26,22 @@ proc sim_hash(text: string): uint64 =
     if vector[i] > 0:
       result = result or (1'u64 shl i)
 
-proc hamming_distance(n: uint64): int =
-  result = 0
-  var x = n
-
-  while x != 0:
-    result += int(x and 1)
-    x = x shr 1
+proc hamming_distance(a, b: uint64): int =
+  popcount(a xor b)
 
 when isMainModule:
-  let text1 = "Apples are sweet and tasty"
-  let text2 = "Apples are tasty and sweet"
-  let text3 = "Bananas are yellow and soft"
+  let
+    doc1 = "The quick brown fox jumps over the lazy dog"
+    doc2 = "The quick brown fox leaps over the lazy dog"
+    doc3 = "Python is a popular programming language"
 
-  let sim_hash1 = sim_hash(text1)
-  let sim_hash2 = sim_hash(text2)
-  let sim_hash3 = sim_hash(text3)
+  let hash1 = sim_hash(doc1)
+  let hash2 = sim_hash(doc2)
+  let hash3 = sim_hash(doc3)
 
   echo ""
-  echo "Hash ", sim_hash1
-  echo "Hash ", sim_hash2
-  echo "Hash ", sim_hash3
+  echo "Hash ", hash1
+  echo "Hash ", hash2
+  echo "Hash ", hash3
 
-  echo hamming_distance(sim_hash1 xor sim_hash3)
+  echo hamming_distance()
