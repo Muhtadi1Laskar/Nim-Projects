@@ -36,10 +36,6 @@ proc hash_data(path: string): string =
     let digest = ctx.finish()
     result = toHex(digest.data, lowercase = true)
 
-proc get_date_time(): DateTime = 
-    let date_time = now().utc
-    return date_time
-
 when isMainModule:
     let files_path = FileOperations.get_all_files("./Data")
     var file_array: seq[Table[string, string]]
@@ -51,7 +47,7 @@ when isMainModule:
         if not file_hash_table.hasKey(path):
             file_hash_table["name"] = path
             file_hash_table["hash"] = hash
-            file_hash_table["createdAt"] = $get_date_time()
+            file_hash_table["createdAt"] = FileOperations.get_date_time()
         
         file_array.add(file_hash_table)
     

@@ -1,4 +1,4 @@
-import std/[os, streams, strutils, sequtils]
+import std/[os, streams, strutils, sequtils, times]
 
 proc read_file*(path: string): string = 
     var result: string
@@ -35,3 +35,7 @@ proc get_all_files*(path: string): seq[string] =
     for kind, f in walkDir(path):
         if kind == pcFile:
             result.add(f)
+
+proc get_date_time*(): string = 
+    let date_time = now().utc
+    return $date_time
