@@ -18,6 +18,11 @@ proc load_data(path: string): Table[string, string] =
     
     return t
 
+proc write_json(data: seq[Table[string, string]]) = 
+    let json_table = %*data
+    
+    writeFile("./JsonData/output.json", $json_table)
+
 proc hash_data(path: string): string = 
     var stream = newFileStream(path, fmRead)
     if stream == nil:
@@ -57,7 +62,7 @@ proc hash_files(path: string): seq[Table[string, string]] =
 when isMainModule:
     let file_path = "./Data"
     let hashed_data_table = hash_files(file_path)
+    
 
-    echo hashed_data_table
-
+    write_json(hashed_data_table)
 
