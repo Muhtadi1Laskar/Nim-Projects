@@ -1,4 +1,4 @@
-import  std/[os, streams, strutils, json, jsonutils, tables]
+import  std/[os, streams, strutils, json, jsonutils, tables, times]
 import nimcrypto
 import ../Common/FileOperations
 
@@ -36,19 +36,30 @@ proc hash_data(path: string): string =
     let digest = ctx.finish()
     result = toHex(digest.data, lowercase = true)
 
-
+proc get_date_time(): DateTime = 
+    let date_time = now().utc
+    return date_time
 
 when isMainModule:
     let files_path = FileOperations.get_all_files("./Data")
     var file_array: seq[Table[string, string]]
-    var file_hash_table = initTable[string, string]()
 
     for path in files_path:
+        var file_hash_table = initTable[string, string]()
         var hash = hash_data(path)
 
         if not file_hash_table.hasKey(path):
-            file_hash_table[path] = hash
+            file_hash_table["name"] = path
+            file_hash_table["hash"] = hash
+            file_hash_table["createdAt"] = $get_date_time()
+        
+        file_array.add(file_hash_table)
     
-    for k, v in file_hash_table.pairs:
-        echo k, v
+    # for k, v in file_hash_table.pairs:
+    #     echo k, v
+
+    echo file_array[7]
+
+    # for i in file_array:
+    #     echo i
 
