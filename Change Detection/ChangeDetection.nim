@@ -36,8 +36,8 @@ proc hash_data(path: string): string =
     let digest = ctx.finish()
     result = toHex(digest.data, lowercase = true)
 
-when isMainModule:
-    let files_path = FileOperations.get_all_files("./Data")
+proc hash_files(path: string): seq[Table[string, string]] = 
+    let files_path = FileOperations.get_all_files(path)
     var file_array: seq[Table[string, string]]
 
     for path in files_path:
@@ -51,11 +51,13 @@ when isMainModule:
         
         file_array.add(file_hash_table)
     
-    # for k, v in file_hash_table.pairs:
-    #     echo k, v
+    return file_array
 
-    echo file_array[7]
 
-    # for i in file_array:
-    #     echo i
+when isMainModule:
+    let file_path = "./Data"
+    let hashed_data_table = hash_files(file_path)
+
+    echo hashed_data_table
+
 
