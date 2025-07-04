@@ -120,8 +120,6 @@ proc check_hash(): string =
 
 when isMainModule:
     let file_path = "./Data"
-    let hashed_data_table = hash_files(file_path)
-    
 
     # save_hash_files(file_path)
     let s = check_hash()
