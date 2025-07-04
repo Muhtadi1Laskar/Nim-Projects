@@ -28,7 +28,7 @@ proc hash_data(path: string): string =
     if stream == nil:
         raise newException(IOError, "❌ Failed to open: " & path)
 
-    var ctx: sha256
+    var ctx: keccak256
     ctx.init()
     var buffer: array[ChunkSize, byte]
 
