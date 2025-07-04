@@ -1,0 +1,4 @@
+This is a new file that has been added to the project. It contains a Nim script for change detection in files.
+// The script includes functions to hash files, check for changes, and find extra files in a
+// directory compared to a saved hash file. It also includes a main procedure to execute the change detection process.
+import std/[os, streams, strutils, json, jsonutils, tables, times, sets]

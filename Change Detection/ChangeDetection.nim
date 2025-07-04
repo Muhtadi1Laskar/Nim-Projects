@@ -1,4 +1,4 @@
-import  std/[os, streams, strutils, json, jsonutils, tables, times]
+import  std/[os, streams, strutils, json, jsonutils, tables, times, sets]
 import nimcrypto
 import ../Common/FileOperations
 
@@ -65,25 +65,63 @@ proc save_hash_files(path: string) =
     let hashed_data = hash_files(path)
     write_json(hashed_data)
 
+proc findAlteredHashes(data_one, data_two: openArray[Table[string, string]]): seq[string] =
+  var hashes_one: Table[string, string]
+  for item in data_one:
+    if item.hasKey("name"):
+        hashes_one[item["name"]] = item["hash"]
+
+  var hashes_two: Table[string, string]
+  for item in data_two:
+    if item.hasKey("name"):
+        hashes_two[item["name"]] = item["hash"]
+
+  var altered_names: seq[string]
+  for name, hash_one in hashes_one:
+    if hashes_two.hasKey(name):
+      let hash_two = hashes_two[name]
+      if hash_one != hash_two:
+        altered_names.add(name)
+
+  return altered_names 
+    
+
+proc get_keys(hash_tables: seq[Table[string, string]]): seq[string] = 
+    for item in hash_tables:
+        result.add(item.getOrDefault("name"))
+    return result
+
 proc check_hash(): string = 
     let saved_file_path = "./JsonData/hashes.json"
     let data_file_path = "./Data"
 
-    let saved_files = load_data(saved_file_path)
+    let saved_files: seq[Table[string, string]] = load_data(saved_file_path)
     if saved_files.len == 0:
         return "There is no saved files"
 
-    # let current_files = hash_files(data_file_path)
-    # if current_files.len == 0:
-    #     return "These is no data file"
+    let current_files: seq[Table[string, string]] = hash_files(data_file_path)
+    if current_files.len == 0:
+        return "These is no data file"
 
-    # var altered_file = @[]
-    # for file 
+    var saved_hash_files: seq[string] = get_keys(saved_files)
+    var current_hash_files: seq[string] = get_keys(current_files)
 
-    echo saved_files.len
+    let altered_files: seq[string] = findAlteredHashes(saved_files, current_files)
+    let missing_files = toHashSet(saved_hash_files) - toHashSet(current_hash_files)
+    let new_files = toHashSet(current_hash_files) - toHashSet(saved_hash_files)
 
-    return "Hello World"
-    
+    if altered_files.len > 0:
+        echo "Altered Files: ", altered_files
+    if missing_files.len > 0:
+        echo "Missing Files: ", missing_files
+    if new_files.len > 0:
+        echo "New Files: ", new_files
+
+    if altered_files.len == 0 and missing_files.len == 0 and new_files.len == 0:
+        return "✅ All files are consistent"
+
+    return "🔍 Hash check completed"
+  
 
 when isMainModule:
     let file_path = "./Data"
@@ -92,4 +130,6 @@ when isMainModule:
 
     save_hash_files(file_path)
     let s = check_hash()
+
+    echo s
 
