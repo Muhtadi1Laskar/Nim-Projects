@@ -21,7 +21,7 @@ proc load_data(path: string): Table[string, string] =
 proc write_json(data: seq[Table[string, string]]) = 
     let json_table = %*data
     
-    writeFile("./JsonData/output.json", $json_table)
+    writeFile("./JsonData/hashes.json", $json_table)
 
 proc hash_data(path: string): string = 
     var stream = newFileStream(path, fmRead)
