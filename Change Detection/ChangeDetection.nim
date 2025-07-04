@@ -4,7 +4,8 @@ import ../Common/FileOperations
 
 const ChunkSize = 8192
 
-proc load_data(path: string): Table[string, string] = 
+proc load_data(path: string): seq[Table[string, string]] = 
+    var result: seq[Table[string, string]]
     let json_data = FileOperations.read_file(path)
     let node = parseJson(json_data)
 
@@ -12,11 +13,13 @@ proc load_data(path: string): Table[string, string] =
         echo "The file is empty"
         return
 
-    var t: Table[string, string]
-    for k, v in node.pairs:
-        t[k] = v.getStr()
+    for item in node:
+        var t: Table[string, string]
+        for k, v in item.pairs:
+            t[k] = v.getStr()
+        result.add(t)                      
     
-    return t
+    return result
 
 proc write_json(data: seq[Table[string, string]]) = 
     let json_table = %*data
@@ -62,10 +65,31 @@ proc save_hash_files(path: string) =
     let hashed_data = hash_files(path)
     write_json(hashed_data)
 
+proc check_hash(): string = 
+    let saved_file_path = "./JsonData/hashes.json"
+    let data_file_path = "./Data"
+
+    let saved_files = load_data(saved_file_path)
+    if saved_files.len == 0:
+        return "There is no saved files"
+
+    # let current_files = hash_files(data_file_path)
+    # if current_files.len == 0:
+    #     return "These is no data file"
+
+    # var altered_file = @[]
+    # for file 
+
+    echo saved_files.len
+
+    return "Hello World"
+    
+
 when isMainModule:
     let file_path = "./Data"
     let hashed_data_table = hash_files(file_path)
     
 
     save_hash_files(file_path)
+    let s = check_hash()
 
