@@ -66,26 +66,21 @@ proc save_hash_files(path: string) =
     write_json(hashed_data)
 
 proc findAlteredHashes(data_one, data_two: openArray[Table[string, string]]): seq[string] =
-  var hashes_one: Table[string, string]
-  for item in data_one:
-    if item.hasKey("name"):
-        hashes_one[item["name"]] = item["hash"]
-
-  var hashes_two: Table[string, string]
-  for item in data_two:
-    if item.hasKey("name"):
-        hashes_two[item["name"]] = item["hash"]
-
-  var altered_names: seq[string]
-  for name, hash_one in hashes_one:
-    if hashes_two.hasKey(name):
-      let hash_two = hashes_two[name]
-      if hash_one != hash_two:
-        altered_names.add(name)
-
-  return altered_names 
+    var
+        hashes_one = initTable[string, string]()
+        hashes_two = initTable[string, string]()
     
-
+    for item in data_one:
+        hashes_one[item.getOrDefault("name")] = item.getOrDefault("hash")
+    
+    for item in data_two:
+        hashes_two[item.getOrDefault("name")] = item.getOrDefault("hash")
+    
+    for name, hash1 in hashes_one.pairs:
+        let hash2 = hashes_two.getOrDefault(name, "")
+        if hash1 != hash2:
+            result.add(name)
+    
 proc get_keys(hash_tables: seq[Table[string, string]]): seq[string] = 
     for item in hash_tables:
         result.add(item.getOrDefault("name"))
@@ -128,7 +123,7 @@ when isMainModule:
     let hashed_data_table = hash_files(file_path)
     
 
-    save_hash_files(file_path)
+    # save_hash_files(file_path)
     let s = check_hash()
 
     echo s
