@@ -41,25 +41,16 @@ proc hash_data(path: string): string =
     let digest = ctx.finish()
     result = toHex(digest.data, lowercase = true)
 
-proc process_file_paths(path: string): (seq[string], seq[string]) = 
-    let file_paths = FileOperations.get_all_files(path, true)
-    var new_paths: seq[string] = @[]
-
-    for path in file_paths:
-        new_paths.add("./Data/" & path)
-    
-    return (file_paths, new_paths)
-
 proc hash_files(path: string): seq[Table[string, string]] = 
-    var (files_path, new_path) = process_file_paths(path)
+    var files_path= FileOperations.get_all_files(path, true)
     var file_array: seq[Table[string, string]]
 
-    for idx, path in new_path:
+    for idx, path in files_path:
         var file_hash_table = initTable[string, string]()
-        var hash = hash_data(path)
+        var hash = hash_data("./Data/" & path)
 
         if not file_hash_table.hasKey(path):
-            file_hash_table["name"] = files_path[idx]
+            file_hash_table["name"] = path
             file_hash_table["hash"] = hash
             file_hash_table["createdAt"] = FileOperations.get_date_time()
         
