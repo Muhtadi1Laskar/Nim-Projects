@@ -118,9 +118,18 @@ proc check_hash(data_file_path, saved_file_path: string): string =
 when isMainModule:
     let file_path = "./Data"
     let saved_json_path = "./JsonData/hashes.json"
+    let 
+        args = commandLineParams()
+        command = args[0]
 
-    # save_hash_files(file_path)
-    let s = check_hash(file_path, saved_json_path)
+    echo "Command: ", command
 
-    echo s
+    case command.toLowerAscii()
+    of "new hash":
+        save_hash_files(file_path)
+    of "check hash":
+        let message = check_hash(file_path, saved_json_path)
+        echo message
+    else:
+        echo "Invalid command"
 
