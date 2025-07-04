@@ -110,15 +110,15 @@ proc check_hash(): string =
     let missing_files = toHashSet(saved_hash_files) - toHashSet(current_hash_files)
     let new_files = toHashSet(current_hash_files) - toHashSet(saved_hash_files)
 
+    if altered_files.len == 0 and missing_files.len == 0 and new_files.len == 0:
+        return "✅ All files are consistent"
+
     if altered_files.len > 0:
         echo "Altered Files: ", altered_files
     if missing_files.len > 0:
         echo "Missing Files: ", missing_files
     if new_files.len > 0:
         echo "New Files: ", new_files
-
-    if altered_files.len == 0 and missing_files.len == 0 and new_files.len == 0:
-        return "✅ All files are consistent"
 
     return "🔍 Hash check completed"
   
