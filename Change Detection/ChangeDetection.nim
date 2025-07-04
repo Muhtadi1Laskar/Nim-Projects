@@ -58,11 +58,14 @@ proc hash_files(path: string): seq[Table[string, string]] =
     
     return file_array
 
+proc save_hash_files(path: string) = 
+    let hashed_data = hash_files(path)
+    write_json(hashed_data)
 
 when isMainModule:
     let file_path = "./Data"
     let hashed_data_table = hash_files(file_path)
     
 
-    write_json(hashed_data_table)
+    save_hash_files(file_path)
 
