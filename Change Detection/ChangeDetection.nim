@@ -86,10 +86,7 @@ proc get_keys(hash_tables: seq[Table[string, string]]): seq[string] =
         result.add(item.getOrDefault("name"))
     return result
 
-proc check_hash(): string = 
-    let saved_file_path = "./JsonData/hashes.json"
-    let data_file_path = "./Data"
-
+proc check_hash(data_file_path, saved_file_path: string): string = 
     let saved_files: seq[Table[string, string]] = load_data(saved_file_path)
     if saved_files.len == 0:
         return "There is no saved files"
@@ -120,9 +117,10 @@ proc check_hash(): string =
 
 when isMainModule:
     let file_path = "./Data"
+    let saved_json_path = "./JsonData/hashes.json"
 
     # save_hash_files(file_path)
-    let s = check_hash()
+    let s = check_hash(file_path, saved_json_path)
 
     echo s
 
