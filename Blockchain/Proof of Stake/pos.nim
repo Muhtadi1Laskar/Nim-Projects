@@ -1,4 +1,4 @@
-import std/[tables, sequtils, strutils, math, random]
+import std/[tables, sequtils, strutils, math, random, strformat ]
 import nimcrypto
 import ../../Common/FileOperations
 
@@ -16,19 +16,19 @@ type
         chain: seq[Block]
         validators: Table[string, int]
 
+proc calculate_hash(block_data: Block): string = 
+    let record = block_data.time_stamp & block_data.data & block_data.previous_hash & block_data.validator
+    return toHex(sha512.digest(record).data)
 
 proc create_genesis_block(): Block = 
-    return Block(
+    result = Block(
         index: 0,
         time_stamp: FileOperations.get_date_time(),
         data: "Genesis Block",
         previous_hash: "0",
-        validator: "None",
+        validator: "Network",
     )
-
-proc calculate_hash(block_data: Block): string = 
-    let record = $block_data.time_stamp & $block_data.data & $block_data.previous_hash & block_data.validator
-    return toHex(sha512.digest(record).data)
+    result.hash = calculate_hash(result)
 
 proc add_validator(self: Chain, name: string, stake: int) = 
     self.validators[name] = stake
@@ -39,6 +39,9 @@ proc select_validator(self: Chain): string =
         stakes: seq[int] = toSeq(self.validators.values)
         total: float = sum(stakes).toFloat
     var probabilities: seq[float]
+
+    if total == 0:
+        return "Network"
     
     for i in stakes:
         probabilities.add(i.toFloat / total)
@@ -47,7 +50,7 @@ proc select_validator(self: Chain): string =
 
 proc add_block(self: Chain, data: string): Block = 
     let validator = self.select_validator()
-    let last_block = self.chain[self.chain.len - 1]
+    let last_block = self.chain[^1]
     var new_block = Block(
         index: self.chain.len,
         time_stamp: FileOperations.get_date_time(),
@@ -63,37 +66,31 @@ proc add_block(self: Chain, data: string): Block =
 
 
 proc new_chain(): Chain =
-    let genesis_block = create_genesis_block()
-    genesis_block.hash = calculate_hash(genesis_block)
-
     result = Chain(
-        chain: @[genesis_block], 
+        chain: @[create_genesis_block()], 
         validators: initTable[string, int]()
     )
 
 proc `$`(b: Block): string =
-  result = "Block(" &
-           "index: " & $b.index & ", " &
-           "data: " & $b.data & ", " &
-           "time_stamp: " & b.time_stamp & ", " &
-           "validator: " & b.validator & ", " &
-           "hash: " & b.hash & ", " &
-           "previous_hash: " & b.previous_hash & ")"
+  result = &"Block #{b.index} | Validator: {b.validator} | Hash: {b.hash[0..9]}..."
 
 proc print_chain(self: Chain) = 
     for blocks in self.chain:
         echo  blocks
 
 when isMainModule:
+    randomize()
+
     let block_chain = new_chain()
 
     block_chain.add_validator("Alice", 50)
     block_chain.add_validator("Bob", 30)
-    block_chain.add_validator("Charlie", 20)
+    block_chain.add_validator("Saitama", 80)
+    block_chain.add_validator("Charlie", 900)
 
-    for i in 1..6:
-        discard block_chain.add_block("Transcation ")
+    for i in 1..10:
+        discard block_chain.add_block("Transaction #" & $i)
 
-    echo "\n📦 Blockchain State:"
+    echo "\n📦 Blockchain State:\n"
 
     block_chain.print_chain()
