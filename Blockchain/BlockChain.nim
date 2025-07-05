@@ -41,15 +41,15 @@ proc hash_block(self: Chain, block_data: Block): string =
     return hash
 
 proc pow(self: Chain, prev_proof: int): int = 
-    var new_proof = 1
-    var check_proof = false
+    var new_proof: int = 1
+    var check_proof: bool = false
 
     while not check_proof:
         let num = (new_proof * new_proof) - (prev_proof * prev_proof)
         let hash_operation = toHex(sha512.digest($num).data)
 
 
-        if hash_operation[0 ..< 4] == "000":
+        if hash_operation[0 ..< 4] == "0000":
             check_proof = true
         else:
             new_proof += 1
@@ -59,7 +59,7 @@ proc mine_block(self: Chain): Response =
     let previous_block = self.get_previous_block()
     let previous_proof = previous_block.proof
     let proof = self.pow(previous_proof)
-    let previous_hash = self.hash(previous_block)
+    let previous_hash = self.hash_block(previous_block)
     let blocks = self.create_block(proof, previous_hash)
     
     return Response(
@@ -85,9 +85,14 @@ proc `$`(self: Block): string =
 
 
 when isMainModule:
-    let block_chain = new_block_chain()
-    let previous_block = block_chain.get_previous_block()
-    let new_block = block_chain.create_block(23, previous_block.previous_hash)
-    
-    echo block_chain.chain
-    echo block_chain.hash_block(new_block)
+    let chain = new_block_chain()
+
+    for i in 0 ..< 20:
+        let blocks = chain.mine_block()
+
+        echo " "
+        echo "Message: ", blocks.message
+        echo "Index: ", blocks.index
+        echo "Time Stamp: ", blocks.time_stamp
+        echo "Proof: ", blocks.proof
+        echo "Previous Hash: ", blocks.previous_hash
