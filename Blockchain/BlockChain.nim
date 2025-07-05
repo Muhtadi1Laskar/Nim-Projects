@@ -32,6 +32,21 @@ proc hash_block(self: Chain, block_data: Block): string =
     let hash = toHex(sha512.digest(record).data)
     return hash
 
+proc pow(self: Chain, prev_proof: int): int = 
+    var new_proof = 1
+    var check_proof = false
+
+    while not check_proof:
+        let num = (new_proof * new_proof) - (prev_proof * prev_proof)
+        let hash_operation = toHex(sha512.digest($num).data)
+
+
+        if hash_operation[0 ..< 4] == "000":
+            check_proof = true
+        else:
+            new_proof += 1
+    return new_proof
+
 proc new_block_chain(): Chain = 
     let c = Chain(chain: @[])
     discard c.create_block(proof = 1, previousHash = "0")
