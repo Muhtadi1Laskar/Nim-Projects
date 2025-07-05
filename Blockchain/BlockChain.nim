@@ -24,6 +24,9 @@ proc create_block(self: Chain, proof: int, previous_hash: string): Block =
 
     return new_block
 
+proc get_previous_block(self: Chain): Block = 
+    return self.chain[self.chain.len-1]
+
 proc new_block_chain(): Chain = 
     let c = Chain(chain: @[])
     discard c.create_block(proof = 1, previousHash = "0")
@@ -39,4 +42,7 @@ proc `$`(self: Block): string =
 
 when isMainModule:
     let block_chain = new_block_chain()
+    let previous_block = block_chain.get_previous_block()
+    let new_block = block_chain.create_block(23, previous_block.previous_hash)
+    
     echo block_chain.chain
