@@ -27,6 +27,11 @@ proc create_block(self: Chain, proof: int, previous_hash: string): Block =
 proc get_previous_block(self: Chain): Block = 
     return self.chain[self.chain.len-1]
 
+proc hash_block(self: Chain, block_data: Block): string = 
+    let record = $block_data.index & block_data.time_stamp & $block_data.proof & block_data.previous_hash
+    let hash = toHex(sha256.digest(record).data)
+    return hash
+
 proc new_block_chain(): Chain = 
     let c = Chain(chain: @[])
     discard c.create_block(proof = 1, previousHash = "0")
@@ -46,3 +51,4 @@ when isMainModule:
     let new_block = block_chain.create_block(23, previous_block.previous_hash)
     
     echo block_chain.chain
+    echo block_chain.hash_block(new_block)
