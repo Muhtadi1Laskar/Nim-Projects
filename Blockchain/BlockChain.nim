@@ -63,7 +63,6 @@ proc mine_block(self: Chain): Response =
     let blocks = self.create_block(proof, previous_hash)
     
     return Response(
-
         message: "Congragulations you just mined a block",
         index: blocks.index,
         time_stamp: blocks.time_stamp,
