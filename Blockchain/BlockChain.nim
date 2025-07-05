@@ -8,6 +8,14 @@ type
         time_stamp: string
         proof: int
         previous_hash: string
+
+type 
+    Response = ref object
+        message: string
+        index: int
+        time_stamp: string
+        proof: int
+        previous_hash: string
     
 type
     Chain = ref object
@@ -46,6 +54,22 @@ proc pow(self: Chain, prev_proof: int): int =
         else:
             new_proof += 1
     return new_proof
+
+proc mine_block(self: Chain): Response = 
+    let previous_block = self.get_previous_block()
+    let previous_proof = previous_block.proof
+    let proof = self.pow(previous_proof)
+    let previous_hash = self.hash(previous_block)
+    let blocks = self.create_block(proof, previous_hash)
+    
+    return Response(
+        message: "Congragulations you just mined a block",
+        index: blocks.index,
+        time_stamp: blocks.time_stamp,
+        proof: blocks.proof,
+        previous_hash: blocks.previous_hash
+    )
+
 
 proc new_block_chain(): Chain = 
     let c = Chain(chain: @[])
