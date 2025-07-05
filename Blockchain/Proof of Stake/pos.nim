@@ -26,6 +26,10 @@ proc create_genesis_block(): Block =
         validator: "None"
     )
 
+proc calculate_hash(self: Chain, block_data: Block): string = 
+    let record = $block_data.time_stamp & $block_data.data & $block_data.previous_hash & block_data.validator
+    return toHex(sha512.digest(record).data)
+
 proc new_chain(): Chain =
     result = Chain(
         chain: @[create_genesis_block()], 
@@ -43,7 +47,8 @@ when isMainModule:
     let block_chain = new_chain()
 
     for blocks in block_chain.chain:
-        echo blocks
+        let h = block_chain.calculate_hash(blocks)
+        echo h
 
     
 
