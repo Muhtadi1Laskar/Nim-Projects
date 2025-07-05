@@ -1,6 +1,6 @@
 import std/[tables]
 import nimcrypto
-import ../Common/FileOperations
+import ../../Common/FileOperations
 
 type
     Block = ref object
