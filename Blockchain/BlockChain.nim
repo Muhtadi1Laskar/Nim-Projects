@@ -29,7 +29,7 @@ proc get_previous_block(self: Chain): Block =
 
 proc hash_block(self: Chain, block_data: Block): string = 
     let record = $block_data.index & block_data.time_stamp & $block_data.proof & block_data.previous_hash
-    let hash = toHex(sha256.digest(record).data)
+    let hash = toHex(sha512.digest(record).data)
     return hash
 
 proc new_block_chain(): Chain = 
