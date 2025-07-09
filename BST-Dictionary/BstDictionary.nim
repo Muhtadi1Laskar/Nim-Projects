@@ -49,7 +49,6 @@ proc search[T](bst: Tree[T], value: T): Table[string, string] =
             result[current_node.value.name] = current_node.value.number 
             return result
 
-
 proc traversal[T](self: Tree[T]) = 
     proc walk(node: Node[T]) = 
         if not node.isNil:
