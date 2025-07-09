@@ -1,0 +1,49 @@
+type
+    Contact = ref object
+        name: string
+        number: int
+
+type 
+    Node[T] = ref object
+        left: Node[T]
+        right: Node[T]
+        value: T
+
+type 
+    Tree[T] = ref object
+        root: Node[T]
+
+proc new_tree[T](): Tree[T] = 
+    return Tree[T](root: nil)
+
+proc insert_helper[T](self: Tree[T], node: Node[T], value: T) = 
+    if node.value.name < value.name:
+        if node.left.isNil:
+            node.left = Node[T](value: value)
+        else:
+            self.insert_helper(node.left, value)
+    else:
+        if node.right.isNil:
+            node.right = Node[T](value: value)
+        else:
+            self.insert_helper(node.right, value)
+    
+proc insert[T](self: Tree[T], value: T) = 
+    if self.root.isNil:
+        self.root = Node[T](value: value)
+    else:
+        self.insert_helper(self.root, value)
+
+when isMainModule:
+    let bst = new_tree[Contact]()
+
+    bst.insert(Contact(name: "Luffy", number: 01775900737))
+    bst.insert(Contact(name: "Zoro", number: 01866758443))
+    bst.insert(Contact(name: "Name", number: 01775900737))
+    bst.insert(Contact(name: "Sanji", number: 01775900737))
+    bst.insert(Contact(name: "Usopp", number: 01775900737))
+    bst.insert(Contact(name: "Chopper", number: 01775900737))
+    bst.insert(Contact(name: "Robin", number: 01775900737))
+    bst.insert(Contact(name: "Franky", number: 01775900737))
+
+    echo $bst.root
