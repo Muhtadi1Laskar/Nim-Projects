@@ -17,7 +17,7 @@ proc new_tree[T](): Tree[T] =
     return Tree[T](root: nil)
 
 proc insert_helper[T](self: Tree[T], node: Node[T], value: T) = 
-    if node.value.name < value.name:
+    if node.value.name > value.name:
         if node.left.isNil:
             node.left = Node[T](value: value)
         else:
@@ -34,6 +34,12 @@ proc insert[T](self: Tree[T], value: T) =
     else:
         self.insert_helper(self.root, value)
 
+proc traversal[T](self: Tree[T], node: Node[T] = self.root) = 
+    if not node.isNil:
+        self.traversal(node.left)
+        echo $node.value.name & " " & $node.value.number
+        self.traversal(node.right)
+
 when isMainModule:
     let bst = new_tree[Contact]()
 
@@ -46,4 +52,4 @@ when isMainModule:
     bst.insert(Contact(name: "Robin", number: 01775900737))
     bst.insert(Contact(name: "Franky", number: 01775900737))
 
-    echo $bst.root
+    bst.traversal(bst.root)
