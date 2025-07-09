@@ -36,8 +36,8 @@ proc insert[T](self: Tree[T], value: T) =
     else:
         self.insert_helper(self.root, value)
 
-proc search[T](bst: Tree[T], value: T): Table[string, string] = 
-    var current_node = bst.root
+proc search[T](self: Tree[T], value: T): Table[string, string] = 
+    var current_node = self.root
     var result: Table[string, string] = initTable[string, string]()
 
     while not current_node.isNil:
@@ -48,6 +48,18 @@ proc search[T](bst: Tree[T], value: T): Table[string, string] =
         else:
             result[current_node.value.name] = current_node.value.number 
             return result
+
+proc update[T](self: Tree[T], name: string, number: string) = 
+    var current_node = self.root
+    while not current_node.isNil:
+        if name == current_node.value.name:
+            current_node.value.number = number
+            return
+        elif name < current_node.value.name:
+            current_node = current_node.left
+        else:
+            current_node = current_node.right
+    echo name & " is not available in the contact\n"
 
 proc traversal[T](self: Tree[T]) = 
     proc walk(node: Node[T]) = 
@@ -94,3 +106,7 @@ when isMainModule:
     echo bst.search(Contact(name: "Franky")), "\n"
 
     echo bst.breadth_first_search().mapIt((it.name, it.number)), "\n"
+
+    bst.update("Zorso", "999222333")
+
+    bst.traversal()
