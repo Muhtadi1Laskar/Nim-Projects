@@ -84,6 +84,7 @@ when isMainModule:
     bst.insert(Contact(name: "Chopper", number: 01775900737))
     bst.insert(Contact(name: "Robin", number: 01775900737))
     bst.insert(Contact(name: "Franky", number: 01775900737))
+    bst.insert(Contact(name: "Babel", number: 01775900737))
 
     bst.traversal(bst.root)
 
