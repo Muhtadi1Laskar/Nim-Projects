@@ -1,4 +1,4 @@
-import std/[tables]
+import std/[tables, sequtils]
 
 type
     Contact = ref object
@@ -55,6 +55,24 @@ proc traversal[T](self: Tree[T], node: Node[T] = self.root) =
         echo $node.value.name & " " & $node.value.number
         self.traversal(node.right)
 
+proc breadth_first_search[T](self: Tree[T]): seq[T] = 
+    if self.root.isNil:
+        echo "The tree is empty"
+        return @[]
+    var list: seq[T] = @[]
+    var queue: seq[Node[T]] = @[self.root]
+
+    while queue.len > 0:
+        var current_node = queue[0]
+        queue = queue[1 ..< queue.len]
+        list.add(current_node.value)
+
+        if not current_node.left.isNil:
+            queue.add(current_node.left)
+        if not current_node.right.isNil:
+            queue.add(current_node.right)
+    return list
+
 when isMainModule:
     let bst = new_tree[Contact]()
 
@@ -70,4 +88,6 @@ when isMainModule:
     bst.traversal(bst.root)
 
     echo " "
-    echo bst.search(Contact(name: "Franky"))
+    echo bst.search(Contact(name: "Franky")), "\n"
+
+    echo bst.breadth_first_search().mapIt((it.name, it.number)), "\n"
