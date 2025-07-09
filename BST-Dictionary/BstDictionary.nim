@@ -1,3 +1,5 @@
+import std/[tables]
+
 type
     Contact = ref object
         name: string
@@ -34,6 +36,20 @@ proc insert[T](self: Tree[T], value: T) =
     else:
         self.insert_helper(self.root, value)
 
+proc search[T](self: Tree[T], value: T): Table[string, int] = 
+    var result: Table[string, int] = initTable[string, int]()
+    var current_node = self.root
+
+    while not current_node.isNil:
+        if current_node.value.name > value.name:
+            current_node = current_node.left
+        elif current_node.value.name < value.name:
+            current_node = current_node.right
+        else:
+            result[current_node.value.name] = current_node.value.number
+            return result
+        
+
 proc traversal[T](self: Tree[T], node: Node[T] = self.root) = 
     if not node.isNil:
         self.traversal(node.left)
@@ -53,3 +69,6 @@ when isMainModule:
     bst.insert(Contact(name: "Franky", number: 01775900737))
 
     bst.traversal(bst.root)
+
+    echo " "
+    echo bst.search(Contact(name: "Franky"))
