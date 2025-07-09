@@ -1,4 +1,5 @@
 import std/[strutils]
+import ../Common/FileOperations
 
 type
     Node = ref object
@@ -32,6 +33,7 @@ proc insert(bst: Tree, value: string) =
     else:
         bst.insert_helper(bst.root, value)
 
+
 proc auto_complete(bst: Tree, prefix: string): seq[string] = 
     var result: seq[string] = @[]
     proc traverse(n: Node) = 
@@ -58,17 +60,14 @@ proc in_order_traversal(bst: Tree) =
             walk(node.right)
     walk(bst.root)
 
+
 when isMainModule:
     let tree = new_tree()
 
-    for word in ["apple", "app", "apricot", "banana", "bat", "ball", "cat", "car", "cab", "cyprus"]:
+    for word in ["apple", "app", "apricot", "banana", "ball", "cat", "czech", "carrot"]:
         tree.insert(word)
-    
-    # tree.in_order_traversal()
 
-    echo tree.auto_complete("ba")
-
-    echo "Autocomplete for 'ap': ", tree.auto_complete("ap")
+    echo "Autocomplete for 'ab': ", tree.auto_complete("apple")
     echo "Autocomplete for 'ba': ", tree.auto_complete("ba")
     echo "Autocomplete for 'c': ", tree.auto_complete("c")
 
