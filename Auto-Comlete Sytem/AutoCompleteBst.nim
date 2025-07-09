@@ -11,8 +11,8 @@ type
 proc new_tree(): Tree = 
     return Tree(root: nil)
 
-proc insert_helper(bst: Tree, value: string) =
-    if bst.value < value:
+proc insert_helper(bst: Tree, node: Node, value: string) =
+    if node.value < value:
         if node.left.isNil:
             node.left = Node(value: value)
         else:
@@ -21,8 +21,7 @@ proc insert_helper(bst: Tree, value: string) =
         if node.right.isNil:
             node.right = Node(value: value)
         else: 
-            bst.insert_helper(node.right, value)
-    
+            bst.insert_helper(node.right, value)   
 
 proc insert(bst: Tree, value: string) = 
     if bst.root.isNil:
@@ -31,6 +30,19 @@ proc insert(bst: Tree, value: string) =
     else:
         bst.insert_helper(bst.root, value)
 
+proc in_order_traversal(bst: Tree) = 
+    proc walk(node: Node) = 
+        if not node.isNil:
+            walk(node.left)
+            echo node.value
+            walk(node.right)
+    walk(bst.root)
+
 when isMainModule:
     let tree = new_tree()
+
+    for word in ["apple", "app", "apricot", "banana", "bat", "ball", "cat", "car", "cab"]:
+        tree.insert(word)
+    
+    tree.in_order_traversal()
 
