@@ -34,7 +34,6 @@ proc insert(bst: Tree, value: string) =
 
 proc auto_complete(bst: Tree, prefix: string): seq[string] = 
     var result: seq[string] = @[]
-
     proc traverse(n: Node) = 
         if n.isNil:
             return
@@ -47,9 +46,8 @@ proc auto_complete(bst: Tree, prefix: string): seq[string] =
             traverse(n.right)
         else:
             traverse(n.left)
-
+            
     traverse(bst.root)
-
     return result
 
 proc in_order_traversal(bst: Tree) = 
