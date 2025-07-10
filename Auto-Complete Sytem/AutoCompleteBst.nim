@@ -59,14 +59,35 @@ proc in_order_traversal(bst: Tree) =
             walk(node.right)
     walk(bst.root)
 
+proc depth_first_search(bst: Tree): seq[string] = 
+    var result: seq[string] = @[]
+    var stack: seq[Node] = @[]
+    var current = bst.root
+
+    while not current.isNil or stack.len > 0:
+        while not current.isNil:
+            stack.add(current)
+            current = current.left
+
+        current = stack.pop()
+        result.add(current.value)
+
+        current = current.right
+
+    return result
+
 
 when isMainModule:
     let tree = new_tree()
 
-    for word in ["apple", "app", "apricot", "banana", "ball", "cat", "czech", "carrot"]:
+    for word in ["apple", "app", "apricot", "banana", "ball", "cat", "a", "czech", "carrot"]:
         tree.insert(word)
 
     echo "Autocomplete for 'ab': ", tree.auto_complete("apple")
     echo "Autocomplete for 'ba': ", tree.auto_complete("ba")
     echo "Autocomplete for 'c': ", tree.auto_complete("c")
+
+    tree.in_order_traversal()
+
+    echo tree.depth_first_search()
 
