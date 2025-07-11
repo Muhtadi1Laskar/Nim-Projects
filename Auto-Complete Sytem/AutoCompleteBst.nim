@@ -91,6 +91,5 @@ when isMainModule:
 
 
 
-    
     echo tree.depth_first_search()
 
