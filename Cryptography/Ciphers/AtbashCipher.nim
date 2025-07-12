@@ -1,14 +1,14 @@
 import std/strutils 
-func atbashCipher(input: string): string =.
 
-  var encryptedString = newStringOfCap(input.len)
+func atbashCipher(input: string): string =
+  var encryptedString: string = newStringOfCap(input.len)
 
   for char in input:
     if char.isAlphaAscii():
       if char.isUpperAscii():
-        encryptedString.add(char(int('Z') - (int(char) - int('A'))))
+        encryptedString.add(system.char(int('Z') - (int(char) - int('A'))))
       elif char.isLowerAscii():
-        encryptedString.add(char(int('z') - (int(char) - int('a'))))
+        encryptedString.add(system.char(int('z') - (int(char) - int('a'))))
     else:
       encryptedString.add(char)
   return encryptedString 
