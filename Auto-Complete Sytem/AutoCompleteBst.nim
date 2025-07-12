@@ -34,7 +34,7 @@ proc insert(bst: Tree, value: string) =
 
 
 proc auto_complete(bst: Tree, prefix: string): seq[string] = 
-    var result: seq[string] = @[]
+    result = @[]
     proc traverse(n: Node) = 
         if n.isNil:
             return
@@ -62,7 +62,7 @@ proc in_order_traversal(bst: Tree) =
 proc depth_first_search(bst: Tree): seq[string] = 
     result = @[]
     var stack: seq[Node] = @[]
-    var current = bst.root
+    var current: Node = bst.root
 
     while not current.isNil or stack.len > 0:
         while not current.isNil:
