@@ -2,7 +2,7 @@ import std/[os, streams, strutils, hashes, tables]
 import nimcrypto
 import ../Common/FileOperations
 
-const ChunkSize = 8192
+const ChunkSize: int = 8192
 
 proc get_files_name(path: string): seq[string] = 
     result = newSeq[string]()
@@ -12,7 +12,7 @@ proc get_files_name(path: string): seq[string] =
             result.add(file_name)
 
 proc hash_file(path: string): string =
-    var stream = newFileStream(path, fmRead)
+    var stream: FileStream = newFileStream(path, fmRead)
     if stream == nil:
         raise newException(IOError, "❌ Failed to open: " & path)
 
@@ -21,7 +21,7 @@ proc hash_file(path: string): string =
     var buffer: array[ChunkSize, byte]
 
     while not stream.atEnd():
-        let read = stream.readData(buffer.addr, ChunkSize)
+        let read: int = stream.readData(buffer.addr, ChunkSize)
         if read > 0:
             ctx.update(buffer[0 ..< read])
     stream.close()
@@ -55,7 +55,7 @@ proc hash_bytes(algorithm = "sha256", data: openArray[byte]): string =
 
 when isMainModule:
     let paths: seq[string] = get_files_name("Data")
-    let hash_algorithm  = "blake2_512"
+    let hash_algorithm: string  = "blake2_512"
     var hash_table: Table[string, string] = initTable[string, string]()
 
     echo " "
