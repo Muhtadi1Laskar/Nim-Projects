@@ -38,7 +38,7 @@ proc insert[T](self: Tree[T], value: T) =
 
 proc search[T](self: Tree[T], value: T): Table[string, string] = 
     var current_node = self.root
-    var result: Table[string, string] = initTable[string, string]()
+    result = initTable[string, string]()
 
     while not current_node.isNil:
         if value.name < current_node.value.name:
@@ -50,7 +50,7 @@ proc search[T](self: Tree[T], value: T): Table[string, string] =
             return result
 
 proc update[T](self: Tree[T], name: string, number: string) = 
-    var current_node = self.root
+    var current_node: Node[BSTContact.Contact] = self.root
     while not current_node.isNil:
         if name == current_node.value.name:
             current_node.value.number = number
@@ -77,7 +77,7 @@ proc breadth_first_search[T](self: Tree[T]): seq[T] =
     var queue: seq[Node[T]] = @[self.root]
 
     while queue.len > 0:
-        var current_node = queue[0]
+        var current_node: Node[BSTContact.Contact] = queue[0]
         queue = queue[1 ..< queue.len]
         list.add(current_node.value)
 
@@ -88,7 +88,7 @@ proc breadth_first_search[T](self: Tree[T]): seq[T] =
     return list
 
 when isMainModule:
-    let bst = new_tree[Contact]()
+    let bst: Tree[BSTContact.Contact] = new_tree[Contact]()
 
     bst.insert(Contact(name: "Luffy", number: "01775900737"))
     bst.insert(Contact(name: "Zoro", number: "01866758443"))
