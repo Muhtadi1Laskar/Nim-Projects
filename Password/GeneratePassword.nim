@@ -1,35 +1,39 @@
-import std/[random, strutils]
+import std/[random, strutils, tables]
 
-const 
-    UPPER: string = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-    LOWER: string = "abcdefghijklmnopqrstuvwxys"
-    DIGITS: string = "0123456789"
-    SYMBOLS: string = "!@#$%^&*()-_=+[]{}|;:,.<>?/"
+const PASSWORDTYPE: Table[string, string] = {
+    "upper": "ABCDEFGHIJKLMNOPQRSTUVWXYZ",
+    "lower": "abcdefghijklmnopqrstuvwxyz",
+    "digits": "0123456789",
+    "symbols": "!@#$%^&*()-_=+[]{}|;:,.<>?/"
 
+}.toTable
 
-const CHARSET = UPPER & LOWER & DIGITS & SYMBOLS
-
-proc secure_password(length: int): string = 
+proc generate_password(length: int, password_type: seq[string]): string = 
     if length < 4:
         raise newException(ValueError, "Password length must be at least 4")
 
     randomize()
 
-    var passwordChars: seq[char] = @[
-        UPPER[rand(UPPER.high)],
-        LOWER[rand(LOWER.high)],
-        DIGITS[rand(DIGITS.high)],
-        SYMBOLS[rand(SYMBOLS.high)]
-    ]
+    for t in password_type:
+        let chars: string = PASSWORDTYPE.getOrDefault(t, "")
 
-    for _ in 4 ..< length:
-        passwordChars.add(CHARSET[rand(CHARSET.high)])
+        result.add(chars[rand(chars.high)])
     
-    passwordChars.shuffle()
+    var char_pool: string
+    for t in password_type:
+        char_pool.add PASSWORDTYPE[t]
+    
+    for _ in result.len ..< length:
+        result.add(char_pool[rand(char_pool.high)])
 
-    return passwordChars.join("")
+    result.shuffle()
+
+    return result.join("")
+
 
 when isMainModule:
-    let password: string = secure_password(10)
+    let password_type: seq[string] = @["upper", "lower", "digits"]
+    let password_length: int = 10
+    let password: string = generate_password(password_length, password_type)
 
-    echo password
+    echo "\n🔐 Generated Password: ", password
