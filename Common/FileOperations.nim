@@ -1,8 +1,7 @@
-import std/[os, streams, strutils, sequtils, times]
+import std/[os, streams, strutils, times]
 
 proc read_file*(path: string): string = 
-    var result: string
-    let f = newFileStream(path, fmRead)
+    let f: FileStream = newFileStream(path, fmRead)
     if f == nil:
         raise newException(IOError, "❌ Failed to open: " & path)
 
@@ -15,16 +14,15 @@ proc read_file*(path: string): string =
     return result.strip()
 
 proc read_bytes*(path: string): seq[byte] = 
-    const ChunkSize = 8192
-    var stream = newFileStream(path, fmRead)
+    const ChunkSize: int = 8192
+    var stream: FileStream = newFileStream(path, fmRead)
     if stream == nil:
         raise newException(IOError, "❌ Failed to open file: " & path)
 
-    var result: seq[byte] = @[]
     var buffer: array[ChunkSize, byte]
 
     while not stream.atEnd():
-        let read = stream.readData(buffer.addr, buffer.len)
+        let read: int = stream.readData(buffer.addr, buffer.len)
         if read > 0:
             result.add(buffer[0 ..< read])
     stream.close()
@@ -37,5 +35,5 @@ proc get_all_files*(path: string, types: bool = false): seq[string] =
             result.add(f)
 
 proc get_date_time*(): string = 
-    let date_time = now().utc
+    let date_time: DateTime = now().utc
     return $date_time
