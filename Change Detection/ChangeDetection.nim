@@ -1,13 +1,12 @@
-import  std/[os, streams, strutils, json, jsonutils, tables, times, sets]
+import  std/[os, streams, strutils, json, tables, sets]
 import nimcrypto
 import ../Common/FileOperations
 
-const ChunkSize = 8192
+const ChunkSize: int = 8192
 
 proc load_data(path: string): seq[Table[string, string]] = 
-    var result: seq[Table[string, string]]
-    let json_data = FileOperations.read_file(path)
-    let node = parseJson(json_data)
+    let json_data: string = FileOperations.read_file(path)
+    let node: JsonNode = parseJson(json_data)
 
     if node.len == 0:
         echo "The file is empty"
@@ -22,12 +21,12 @@ proc load_data(path: string): seq[Table[string, string]] =
     return result
 
 proc write_json(data: seq[Table[string, string]]) = 
-    let json_table = %*data
+    let json_table: JsonNode = %*data
     
     writeFile("./JsonData/hashes.json", $json_table)
 
 proc hash_data(path: string): string = 
-    var stream = newFileStream(path, fmRead)
+    var stream: FileStream = newFileStream(path, fmRead)
     if stream == nil:
         raise newException(IOError, "❌ Failed to open: " & path)
 
@@ -36,7 +35,7 @@ proc hash_data(path: string): string =
     var buffer: array[ChunkSize, byte]
 
     while not stream.atEnd():
-        let read = stream.readData(buffer.addr, ChunkSize)
+        let read: int = stream.readData(buffer.addr, ChunkSize)
         if read > 0:
             ctx.update(buffer[0 ..< read])
     stream.close()
@@ -45,12 +44,12 @@ proc hash_data(path: string): string =
     result = toHex(digest.data, lowercase = true)
 
 proc hash_files(path: string): seq[Table[string, string]] = 
-    var files_path= FileOperations.get_all_files(path, true)
+    var files_path: seq[string]= FileOperations.get_all_files(path, true)
     var file_array: seq[Table[string, string]]
 
     for idx, path in files_path:
-        var file_hash_table = initTable[string, string]()
-        var hash = hash_data("./Data/" & path)
+        var file_hash_table: Table[system.string, system.string] = initTable[string, string]()
+        var hash: string = hash_data("./Data/" & path)
 
         if not file_hash_table.hasKey(path):
             file_hash_table["name"] = path
@@ -62,13 +61,13 @@ proc hash_files(path: string): seq[Table[string, string]] =
     return file_array
 
 proc save_hash_files(path: string) = 
-    let hashed_data = hash_files(path)
+    let hashed_data: seq[Table[system.string, system.string]] = hash_files(path)
     write_json(hashed_data)
 
 proc findAlteredHashes(data_one, data_two: openArray[Table[string, string]]): seq[string] =
     var
-        hashes_one = initTable[string, string]()
-        hashes_two = initTable[string, string]()
+        hashes_one: Table[system.string, system.string] = initTable[string, string]()
+        hashes_two: Table[system.string, system.string] = initTable[string, string]()
     
     for item in data_one:
         hashes_one[item.getOrDefault("name")] = item.getOrDefault("hash")
@@ -77,7 +76,7 @@ proc findAlteredHashes(data_one, data_two: openArray[Table[string, string]]): se
         hashes_two[item.getOrDefault("name")] = item.getOrDefault("hash")
     
     for name, hash1 in hashes_one.pairs:
-        let hash2 = hashes_two.getOrDefault(name, "")
+        let hash2: string = hashes_two.getOrDefault(name, "")
         if hash1 != hash2:
             result.add(name)
     
@@ -99,8 +98,8 @@ proc check_hash(data_file_path, saved_file_path: string): string =
     var current_hash_files: seq[string] = get_keys(current_files)
 
     let altered_files: seq[string] = findAlteredHashes(saved_files, current_files)
-    let missing_files = toHashSet(saved_hash_files) - toHashSet(current_hash_files)
-    let new_files = toHashSet(current_hash_files) - toHashSet(saved_hash_files)
+    let missing_files: HashSet[system.string] = toHashSet(saved_hash_files) - toHashSet(current_hash_files)
+    let new_files: HashSet[system.string] = toHashSet(current_hash_files) - toHashSet(saved_hash_files)
 
     if altered_files.len == 0 and missing_files.len == 0 and new_files.len == 0:
         return "✅ All files are consistent"
@@ -116,11 +115,11 @@ proc check_hash(data_file_path, saved_file_path: string): string =
   
 
 when isMainModule:
-    let file_path = "./Data"
-    let saved_json_path = "./JsonData/hashes.json"
+    let file_path: string = "./Data"
+    let saved_json_path: string = "./JsonData/hashes.json"
     let 
-        args = commandLineParams()
-        command = args[0]
+        args: seq[string] = commandLineParams()
+        command: string = args[0]
 
     echo "Command: ", command
 
@@ -128,7 +127,7 @@ when isMainModule:
     of "new hash":
         save_hash_files(file_path)
     of "check hash":
-        let message = check_hash(file_path, saved_json_path)
+        let message: string = check_hash(file_path, saved_json_path)
         echo message
     else:
         echo "Invalid command"
