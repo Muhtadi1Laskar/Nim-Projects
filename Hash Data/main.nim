@@ -1,4 +1,4 @@
-import std/[os, streams, strutils, hashes, tables]
+import std/[os, streams, tables]
 import nimcrypto
 import ../Common/FileOperations
 
