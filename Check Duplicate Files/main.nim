@@ -1,12 +1,12 @@
-import os, strutils, tables, hashes
+import tables
 import std/streams
 import nimcrypto
 import ../Common/FileOperations
 
-const ChunkSize = 8192
+const ChunkSize: int = 8192
 
 proc file_hash(path: string): string = 
-    var stream = newFileStream(path, fmRead)
+    var stream: FileStream = newFileStream(path, fmRead)
     if stream == nil:
         raise newException(IOError, "❌ Failed to open: " & path)
 
@@ -15,7 +15,7 @@ proc file_hash(path: string): string =
     var buffer: array[ChunkSize, byte]
 
     while not stream.atEnd():
-        let read = stream.readData(buffer.addr, ChunkSize)
+        let read: int = stream.readData(buffer.addr, ChunkSize)
         if read > 0:
             ctx.update(buffer[0 ..< read])
     stream.close()
@@ -24,12 +24,12 @@ proc file_hash(path: string): string =
     result = toHex(digest.data, lowercase=true)
 
 proc find_duplicates(folder: string): Table[string, seq[string]] = 
-    let files = FileOperations.get_all_files(folder)
-    var hash_map = initTable[string, seq[string]]()
+    let files: seq[string] = FileOperations.get_all_files(folder)
+    var hash_map: Table[system.string, seq[string]] = initTable[string, seq[string]]()
 
     for file in files:
         try:
-            let hash = file_hash(file)
+            let hash: string = file_hash(file)
             hash_map.mgetOrPut(hash, @[]).add(file)
         except IOError:
             echo "⚠️ Skipping unreadable file: ", file
@@ -39,8 +39,8 @@ proc find_duplicates(folder: string): Table[string, seq[string]] =
             result[k] = v
 
 when isMainModule:
-    let targetDir = "Data"  # 🔁 Replace with your directory
-    let duplicates = find_duplicates(targetDir)
+    let targetDir: string = "Data"  # 🔁 Replace with your directory
+    let duplicates: Table[system.string, seq[string]] = find_duplicates(targetDir)
 
     if duplicates.len == 0:
         echo "✅ No duplicate files found!"
