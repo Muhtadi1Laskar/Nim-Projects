@@ -1,4 +1,4 @@
-import std/[random, strutils, tables, times, hashes]
+import std/[random, strutils, tables, times, hashes, json]
 import nimcrypto
 
 const PASSWORDTYPE: Table[string, string] = {
@@ -6,7 +6,6 @@ const PASSWORDTYPE: Table[string, string] = {
     "lower": "abcdefghijklmnopqrstuvwxyz",
     "digits": "0123456789",
     "symbols": "!@#$%^&*()-_=+[]{}|;:,.<>?/"
-
 }.toTable
 
 proc generate_salt(length: int): string = 
@@ -44,12 +43,25 @@ proc generate_password(length: int, password_type: seq[string]): string =
 
     return result.join("")
 
+proc write_json(data: Table[string, string]) = 
+    let json_table: JsonNode = %*data
+    
+    writeFile("C:/Users/laska/OneDrive/Documents/Coding/Nim/nim-projects/Password/Saved-Password/password.json", $json_table)
+
 
 when isMainModule:
     let password_type: seq[string] = @["upper", "lower", "digits"]
     let password_length: int = 10
     let password: string = generate_password(password_length, password_type)
     let hashed_password: string = hash_data(password)
+    var data: Table[string, string] = initTable[string, string]()
+
+    data["password"] = password
+    data["hashedPassword"] = hashed_password
+
+    echo data
+
+    write_json(data)
 
     echo "\n🔐 Generated Password: ", password
     echo "\n Password Hash: ", hashed_password
