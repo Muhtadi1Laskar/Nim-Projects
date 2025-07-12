@@ -60,7 +60,7 @@ proc in_order_traversal(bst: Tree) =
     walk(bst.root)
 
 proc depth_first_search(bst: Tree): seq[string] = 
-    var result: seq[string] = @[]
+    result = @[]
     var stack: seq[Node] = @[]
     var current = bst.root
 
@@ -78,7 +78,7 @@ proc depth_first_search(bst: Tree): seq[string] =
 
 
 when isMainModule:
-    let tree = new_tree()
+    let tree: Tree = new_tree()
 
     for word in ["apple", "app", "apricot", "banana", "ball", "cat", "a", "czech", "carrot"]:
         tree.insert(word)
