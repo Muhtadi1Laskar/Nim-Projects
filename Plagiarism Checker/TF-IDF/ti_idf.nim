@@ -1,7 +1,7 @@
 import std/[os, streams, strutils, sequtils, math, re, bitops, tables, sets]
 import ../../Common/FileOperations
 
-const stop_words = toHashSet([
+const stop_words: HashSet[system.string] = toHashSet([
   "a", "an", "this", "the", "is", "are", "was", "were", "will", "be",
   "in", "on", "at", "of", "for", "to", "from", "with",
   "and", "or", "but", "not", "if", "then", "else",
@@ -13,10 +13,10 @@ const stop_words = toHashSet([
 ])
 
 proc tokenize(data: string): seq[string] = 
-  let cleaned = data
+  let cleaned: string = data
                 .toLowerAscii()
                 .replace(re"[-]{2,}", " ")  # remove '----' etc
-  let tokenPattern = re"\b[\w'-]+\b"
+  let tokenPattern: Regex = re"\b[\w'-]+\b"
 
   result = @[]
   for m in findAll(cleaned, tokenPattern):
@@ -28,13 +28,13 @@ proc normalize_word(word: string): string =
 
 proc remove_stopwords(data_seq: seq[string]): seq[string] = 
   for word in data_seq:
-    let normalized = normalize_word(word)
+    let normalized: string = normalize_word(word)
     if normalized.len > 0 and not stop_words.contains(normalized):
       result.add(normalized)
 
 proc calculate_tf(words: seq[string]): Table[string, float] = 
-  var tf = initTable[string, float]()
-  let total = words.len.float
+  var tf: Table[system.string, system.float] = initTable[string, float]()
+  let total: float = words.len.float
 
   for word in words:
     tf.mgetOrPut(word, 0.0) += 1.0
@@ -45,11 +45,11 @@ proc calculate_tf(words: seq[string]): Table[string, float] =
   result = tf
 
 proc calculate_IDF(corpus: seq[seq[string]]): Table[string, float] = 
-  var df = initTable[string, int]()
-  let total_docs = corpus.len.float
+  var df: Table[system.string, system.int] = initTable[string, int]()
+  let total_docs: float = corpus.len.float
 
   for document in corpus:
-    let unique = toHashSet(document)
+    let unique: HashSet[system.string] = toHashSet(document)
     for word in unique:
       df.mgetOrPut(word, 0) += 1
 
@@ -58,7 +58,7 @@ proc calculate_IDF(corpus: seq[seq[string]]): Table[string, float] =
     result[word] = ln(total_docs / (1 + count.float))
 
 proc calculate_TF_IDF(doc: seq[string], idf: Table[string, float]): Table[string, float] =
-  let tf = calculate_tf(doc)
+  let tf: Table[system.string, system.float] = calculate_tf(doc)
   result = initTable[string, float]()
   for word, tf_score in tf.pairs:
     result[word] = tf_score * idf.getOrDefault(word, ln(float(idf.len + 1)))
@@ -67,7 +67,7 @@ proc cosine_similarity(vec1, vec2: Table[string, float]): float =
   var dot, mag1, mag2: float
 
   for key, v1 in vec1:
-    let v2 = vec2.getOrDefault(key, 0.0)
+    let v2: float = vec2.getOrDefault(key, 0.0)
     dot += v1 * v2
     mag1 += v1 * v1
 
@@ -81,24 +81,24 @@ proc cosine_similarity(vec1, vec2: Table[string, float]): float =
   result = dot / (mag1 * mag2)
 
 when isMainModule:
-    let all_files_paths = FileOperations.get_all_files("../Data/")
-    let input_data = FileOperations.read_file("../Data/Input-Data/input.txt")
-    let input_data_clean = remove_stopwords(tokenize(input_data))
+    let all_files_paths: seq[string] = FileOperations.get_all_files("../Data/")
+    let input_data: string = FileOperations.read_file("../Data/Input-Data/input.txt")
+    let input_data_clean: seq[string] = remove_stopwords(tokenize(input_data))
 
     var corpus: seq[seq[string]]
     for path in all_files_paths:
-        let data = FileOperations.read_file(path)
-        let clean_data = remove_stopwords(tokenize(data))
+        let data: string = FileOperations.read_file(path)
+        let clean_data: seq[string] = remove_stopwords(tokenize(data))
 
         corpus.add(clean_data)
 
     
-    let idf = calculate_IDF(corpus)
-    let input_tf_idf = calculate_TF_IDF(input_data_clean, idf)
+    let idf: Table[system.string, system.float] = calculate_IDF(corpus)
+    let input_tf_idf: Table[system.string, system.float] = calculate_TF_IDF(input_data_clean, idf)
 
     echo " "
 
     for i, doc in corpus:
-        let corpus_tf_idf = calculate_TF_IDF(doc, idf)
-        let similarity = cosine_similarity(input_tf_idf, corpus_tf_idf)
+        let corpus_tf_idf: Table[system.string, system.float] = calculate_TF_IDF(doc, idf)
+        let similarity: float = cosine_similarity(input_tf_idf, corpus_tf_idf)
         echo "File: ", all_files_paths[i], " | Similarity Score: ", similarity * 100, "%"
