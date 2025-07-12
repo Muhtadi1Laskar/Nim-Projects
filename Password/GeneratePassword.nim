@@ -1,4 +1,4 @@
-import std/[random, strutils, tables, os, times, hashes]
+import std/[random, strutils, tables, times, hashes]
 import nimcrypto
 
 const PASSWORDTYPE: Table[string, string] = {
