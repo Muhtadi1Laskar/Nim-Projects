@@ -17,7 +17,7 @@ type
         validators: Table[string, int]
 
 proc calculate_hash(block_data: Block): string = 
-    let record = block_data.time_stamp & block_data.data & block_data.previous_hash & block_data.validator
+    let record: string = block_data.time_stamp & block_data.data & block_data.previous_hash & block_data.validator
     return toHex(sha512.digest(record).data)
 
 proc create_genesis_block(): Block = 
@@ -49,9 +49,9 @@ proc select_validator(self: Chain): string =
     result = sample(names, probabilities)
 
 proc add_block(self: Chain, data: string): Block = 
-    let validator = self.select_validator()
-    let last_block = self.chain[^1]
-    var new_block = Block(
+    let validator: string = self.select_validator()
+    let last_block: Block = self.chain[^1]
+    var new_block: Block = Block(
         index: self.chain.len,
         time_stamp: FileOperations.get_date_time(),
         data: data,
@@ -81,7 +81,7 @@ proc print_chain(self: Chain) =
 when isMainModule:
     randomize()
 
-    let block_chain = new_chain()
+    let block_chain: Chain = new_chain()
 
     block_chain.add_validator("Alice", 50)
     block_chain.add_validator("Bob", 30)
