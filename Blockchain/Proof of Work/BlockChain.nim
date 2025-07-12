@@ -1,4 +1,3 @@
-import std/[tables]
 import nimcrypto
 import ../../Common/FileOperations
 
@@ -22,7 +21,7 @@ type
         chain: seq[Block]
 
 proc create_block(self: Chain, proof: int, previous_hash: string): Block =
-    let new_block = Block(
+    let new_block: Block = Block(
         index: self.chain.len + 1,
         time_stamp: FileOperations.get_date_time(),
         proof: proof,
@@ -36,8 +35,8 @@ proc get_previous_block(self: Chain): Block =
     return self.chain[self.chain.len-1]
 
 proc hash_block(self: Chain, block_data: Block): string = 
-    let record = $block_data.index & block_data.time_stamp & $block_data.proof & block_data.previous_hash
-    let hash = toHex(sha512.digest(record).data)
+    let record: string = $block_data.index & block_data.time_stamp & $block_data.proof & block_data.previous_hash
+    let hash: string = toHex(sha512.digest(record).data)
     return hash
 
 proc pow(self: Chain, prev_proof: int): int = 
@@ -45,9 +44,8 @@ proc pow(self: Chain, prev_proof: int): int =
     var check_proof: bool = false
 
     while not check_proof:
-        let num = (new_proof * new_proof) - (prev_proof * prev_proof)
-        let hash_operation = toHex(sha512.digest($num).data)
-
+        let num: int = (new_proof * new_proof) - (prev_proof * prev_proof)
+        let hash_operation: string = toHex(sha512.digest($num).data)
 
         if hash_operation[0 ..< 4] == "0000":
             check_proof = true
@@ -56,11 +54,11 @@ proc pow(self: Chain, prev_proof: int): int =
     return new_proof
 
 proc mine_block(self: Chain): Response = 
-    let previous_block = self.get_previous_block()
-    let previous_proof = previous_block.proof
-    let proof = self.pow(previous_proof)
-    let previous_hash = self.hash_block(previous_block)
-    let blocks = self.create_block(proof, previous_hash)
+    let previous_block: Block = self.get_previous_block()
+    let previous_proof: int = previous_block.proof
+    let proof: int = self.pow(previous_proof)
+    let previous_hash: string = self.hash_block(previous_block)
+    let blocks: Block = self.create_block(proof, previous_hash)
     
     return Response(
         message: "Congragulations you just mined a block",
@@ -72,7 +70,7 @@ proc mine_block(self: Chain): Response =
 
 
 proc new_block_chain(): Chain = 
-    let c = Chain(chain: @[])
+    let c: Chain = Chain(chain: @[])
     discard c.create_block(proof = 1, previousHash = "0")
     return c
 
@@ -85,10 +83,10 @@ proc `$`(self: Block): string =
 
 
 when isMainModule:
-    let chain = new_block_chain()
+    let chain: Chain = new_block_chain()
 
     for i in 0 ..< 20:
-        let blocks = chain.mine_block()
+        let blocks: Response = chain.mine_block()
 
         echo " "
         echo "Message: ", blocks.message
