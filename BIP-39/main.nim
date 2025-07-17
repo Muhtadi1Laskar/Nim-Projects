@@ -16,9 +16,27 @@ proc randomByte(len: int): seq[byte] =
 
     return @randomBytes
 
+proc bitsToChar(b: byte): byte = 
+    return byte(ord('0') + int(b and 1))
+
+proc bytesToBits(data: seq[byte]): string = 
+    var bits: seq[byte] = @[]
+
+    for b in data:
+        bits.add(bitsToChar(b shr 7))
+        bits.add(bitsToChar(b shr 6))
+        bits.add(bitsToChar(b shr 5))
+        bits.add(bitsToChar(b shr 4))
+        bits.add(bitsToChar(b shr 3))
+        bits.add(bitsToChar(b shr 2))
+        bits.add(bitsToChar(b shr 1))
+        bits.add(bitsToChar(b))
+    return bits.join("")
+
+
 when isMainModule:
     var wordList: seq[string] = getWordList()
-    var randomNum: seq[byte] = randomByte(16)
+    var entropy: seq[byte] = randomByte(16)
 
-    echo randomNum
+    echo bytesToBits(entropy)
 
