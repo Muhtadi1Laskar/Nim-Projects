@@ -41,6 +41,33 @@ proc append(list: TaskTracker, value: string) =
 
     return 
 
+proc printAllTask(list: TaskTracker) = 
+    if list.head.isNil:
+        echo "There is no task"
+        return
+
+    var currentNode: Task = list.head
+
+    while not currentNode.isNil:
+        echo "\nTask No. :", currentNode.id
+        echo "Description: ", currentNode.description
+        echo "Status: ", currentNode.status
+        echo "CreatedAt: ", currentNode.createdAt
+        echo "UpdatedAt: ", currentNode.updatedAt
+        echo ""
+
+        currentNode = currentNode.next
+    
+
 
 when isMainModule:
-    var tracker: TaskTracker = newTracker()    
+    var tracker: TaskTracker = newTracker()
+
+    tracker.append("Read book")
+    tracker.append("Buy Groceries")
+    tracker.append("Cook dinner")
+    tracker.append("Clean the coffee machine")
+    tracker.append("Take notes on system design interview")
+    tracker.append("Watch the anime Sakamoto Days")
+
+    tracker.printAllTask()
