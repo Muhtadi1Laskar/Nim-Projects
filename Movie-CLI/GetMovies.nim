@@ -1,7 +1,8 @@
-import std/[httpclient, json, strformat, strutils]
+import std/[os, httpclient, json, strformat, strutils, strformat]
 
-let Token: string = ""
-
+let 
+    Token: string = ""
+    BASEURL: string = "https://api.themoviedb.org/3/movie/{type}?page={p}"
 type
     MovieData = object
         title: string
@@ -61,28 +62,44 @@ Popularity: {elem.popularity}
 Original Title: {elem.originalTitle}
 Vote Average: {elem.voteAverage}
 Vote Count: {elem.voteCount}
+
+-------------------------------
         """
 
-proc fetchMovies(movieType: string, page: int = 1) = 
+proc buildURL(movieType: string, page: int): string = 
+    let endpoint = case movieType.toLowerAscii()
+    of "playing": "now_playing"
+    of "popular": "popular"
+    of "top-rated": "top_rated"
+    of "upcoming": "upcoming"
+    else: ""
+
+    if endpoint == "":
+        raise newException(ValueError, "Invalid movie type: " & movieType)
+
+    result = BASEURL
+        .replace("{type}", endpoint)
+        .replace("{p}", $page)
+
+proc fetchMovies(movieType: string, page: int) = 
     var formattedStr: string = toLowerAscii(movieType)
-    let baseURL: string = "https://api.themoviedb.org/3/movie/{type}?page=2"
-    var url: string
-
-    case formattedStr:
-    of "playing":
-        url = baseURL.replace("{type}", "playing")
-    of "popular":
-        url = baseURL.replace("{type}", "popular")
-    of "top-rated":
-        url = baseURL.replace("{type}", "top_rated")
-    of "upcoming":
-        url = baseURL.replace("{type}", "upcoming")
-    else:
-        echo "Invalid movie type"
-    
+    var url: string = buildURL(movieType, page)
     let data: seq[MovieData] = getPopularMovies(url)
-
     printPopularMovies(data)
 
 when isMainModule:
-    fetchMovies("popular", 10)
+    let 
+        args: seq[string] = commandLineParams()
+    
+    if paramCount() == 0:
+        quit(1)
+    
+    let command: string = paramStr(1)
+
+    if paramCount() < 2:
+        echo "Error: Not enough param"
+        quit(1)
+    
+    let page: int = parseInt(paramStr(2))
+    
+    fetchMovies(command, page)
