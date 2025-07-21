@@ -79,6 +79,30 @@ proc delete(list: TaskTracker, id: int) =
     list.length -= 1
     return
 
+proc update(list: TaskTracker, id: int, fieldToUpdate, value: string) = 
+    if list.head.isNil:
+        echo "There is no tasks"
+        return
+    
+    if id < 1 or id > list.length:
+        echo "There is no task accociated with the given id \n"
+        return
+
+    var nodeToUpdate: Task = list.head
+    for i in 1..<id:
+        nodeToUpdate = nodeToUpdate.next
+    
+    if fieldToUpdate == "description":
+        nodeToUpdate.description = value
+    elif fieldToUpdate == "status":
+        nodeToUpdate.status = value
+    else:
+        echo "Invalid field"
+        return
+        
+    
+
+
 
 proc printAllTasks(list: TaskTracker) =
   if list.head.isNil:
@@ -112,5 +136,10 @@ when isMainModule:
     tracker.delete(7)
 
     echo "Updated List: \n"
+
+    tracker.printAllTasks()
+
+    tracker.update(2, "status", "in progress")
+    tracker.update(4, "status", "done")
 
     tracker.printAllTasks()
