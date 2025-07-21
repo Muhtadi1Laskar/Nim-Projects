@@ -3,10 +3,10 @@ import std/[httpclient, json, strformat, strutils]
 let Token: string = ""
 
 type
-    PopularMovie = object
+    MovieData = object
         title: string
         overview: string
-        releaseData: string
+        releaseDate: string
         popularity: float
         originalTitle: string
         voteAverage: float
@@ -34,17 +34,17 @@ proc getMovies(url: string): JsonNode =
         client.close() 
 
 
-proc getPopularMovies(): seq[PopularMovie] = 
-    let url: string = "https://api.themoviedb.org/3/movie/popular?page=1"
+proc getPopularMovies(): seq[MovieData] = 
+    let url: string = "https://api.themoviedb.org/3/movie/popular?page=2"
     var response: JsonNode = getMovies(url)
     let results: JsonNode = response["results"]
-    var data: seq[PopularMovie] = @[]
+    var data: seq[MovieData] = @[]
 
     for item in results:
-        echo item
-        data.add(PopularMovie(
+        data.add(MovieData(
             title: item{"title"}.getStr,
             overview: item{"overview"}.getStr,
+            releaseDate: item{"release_date"}.getStr,
             popularity: item{"popularity"}.getFloat,
             originalTitle: item{"original_title"}.getStr,
             voteAverage: item{"vote_average"}.getFloat,
@@ -53,7 +53,19 @@ proc getPopularMovies(): seq[PopularMovie] =
     
     return data
 
-when isMainModule:
-    let data: seq[PopularMovie] = getPopularMovies()
+proc printPopularMovies(data: seq[MovieData]) = 
+    for elem in data:
+        echo fmt"""
+Title: {elem.title}
+Overview: {elem.overview}
+Release Date: {elem.releaseDate}
+Popularity: {elem.popularity}
+Original Title: {elem.originalTitle}
+Vote Average: {elem.voteAverage}
+Vote Count: {elem.voteCount}
+        """
 
-    echo data
+when isMainModule:
+    let data: seq[MovieData] = getPopularMovies()
+
+    printPopularMovies(data)
