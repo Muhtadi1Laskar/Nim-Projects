@@ -99,14 +99,10 @@ proc update(list: TaskTracker, id: int, fieldToUpdate, value: string) =
     else:
         echo "Invalid field"
         return
-        
-    
-
-
 
 proc printAllTasks(list: TaskTracker) =
   if list.head.isNil:
-    echo "There is no task"
+    echo "There are no tasks"
     return
 
   var currentNode = list.head
@@ -119,7 +115,22 @@ CreatedAt  : {currentNode.createdAt}
 UpdatedAt  : {currentNode.updatedAt}
 """
     currentNode = currentNode.next
+
+proc printTaskByFilter(list: TaskTracker, filter: string) = 
+    if list.head.isNil:
+        echo "There are no tasks"
+        return
     
+    var currentNode: Task = list.head
+    while not currentNode.isNil:
+        if currentNode.status == filter:
+            echo "\nTask No. :", currentNode.id
+            echo "Description: ", currentNode.description
+            echo "Status: ", currentNode.status
+            echo "CreatedAt: ", currentNode.createdAt
+            echo "UpdatedAt: ", currentNode.updatedAt
+            echo ""
+        currentNode = currentNode.next
 
 when isMainModule:
     var tracker: TaskTracker = newTracker()
@@ -139,7 +150,14 @@ when isMainModule:
 
     tracker.printAllTasks()
 
-    tracker.update(2, "status", "in progress")
+    tracker.update(3, "status", "done")
     tracker.update(4, "status", "done")
 
-    tracker.printAllTasks()
+    tracker.printTaskByFilter("done")
+
+    tracker.printTaskByFilter("todo")
+
+    tracker.update(5, "status", "in-progress")
+    tracker.update(2, "status", "done")
+
+    tracker.printTaskByFilter("in-progress")
