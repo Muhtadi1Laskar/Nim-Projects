@@ -33,9 +33,7 @@ proc getMovies(url: string): JsonNode =
     finally:
         client.close() 
 
-
-proc getPopularMovies(): seq[MovieData] = 
-    let url: string = "https://api.themoviedb.org/3/movie/popular?page=2"
+proc getPopularMovies(url: string): seq[MovieData] = 
     var response: JsonNode = getMovies(url)
     let results: JsonNode = response["results"]
     var data: seq[MovieData] = @[]
@@ -65,7 +63,26 @@ Vote Average: {elem.voteAverage}
 Vote Count: {elem.voteCount}
         """
 
-when isMainModule:
-    let data: seq[MovieData] = getPopularMovies()
+proc fetchMovies(movieType: string, page: int = 1) = 
+    var formattedStr: string = toLowerAscii(movieType)
+    let baseURL: string = "https://api.themoviedb.org/3/movie/{type}?page=2"
+    var url: string
+
+    case formattedStr:
+    of "playing":
+        url = baseURL.replace("{type}", "playing")
+    of "popular":
+        url = baseURL.replace("{type}", "popular")
+    of "top-rated":
+        url = baseURL.replace("{type}", "top_rated")
+    of "upcoming":
+        url = baseURL.replace("{type}", "upcoming")
+    else:
+        echo "Invalid movie type"
+    
+    let data: seq[MovieData] = getPopularMovies(url)
 
     printPopularMovies(data)
+
+when isMainModule:
+    fetchMovies("popular", 10)
