@@ -71,55 +71,31 @@ proc printEvents(data: seq[GitHubEvent]) =
 
 
 proc fetchRepos*(username: string): seq[GitHubRepo] =
-  var client = newHttpClient()
-  client.headers = newHttpHeaders({
-    "Authorization": fmt"Bearer {Token}",
-    "Accept": "application/vnd.github.v3+json",
-    "User-Agent": "Nim-GitHub-Client"  # GitHub requires User-Agent
-  })
-
-  try:
     let url: string = GitHubAPI.replace("{name}", username)
-    let response: Response = client.get(url)
-    
-    if response.code == Http200:
-      let data: JsonNode = parseJson(response.body)
-      
-      for repo in data:
-        result.add(GitHubRepo(
-          name: repo{"name"}.getStr,
-          full_name: repo{"full_name"}.getStr,
-          description: repo{"description"}.getStr("No description"),
-          language: repo{"language"}.getStr("Unknown")
-        ))
-    else:
-      echo fmt"Error: {response.code} - {response.status}"
-      
-  except HttpRequestError as e:
-    echo "HTTP request failed: ", e.msg
-  except JsonParsingError:
-    echo "Failed to parse JSON response"
-  finally:
-    client.close()
+    let response: JsonNode = makeAPICall(url)
 
+    for node in response:
+        result.add(GitHubRepo(
+          name: node{"name"}.getStr,
+          full_name: node{"full_name"}.getStr,
+          description: node{"description"}.getStr("No description"),
+          language: node{"language"}.getStr("Unknown")
+        ))
 
 
 when isMainModule:
-
     echo "Enter GitHub username: "
-    # let username = readLine(stdin).strip()
-    let username: string = "Muhtadi1Laskar"
+    let username = readLine(stdin).strip()
   
     let repos: seq[GitHubRepo] = fetchRepos(username)
-
     let events: seq[GitHubEvent] = fetchAccountEvent(username)
 
     printEvents(events)
   
-  for repo in repos:
-    echo fmt"""
-Repository: {repo.name}
-Full Name: {repo.full_name}
-Description: {repo.description}
-Language: {repo.language}
-# """
+    for repo in repos:
+        echo fmt"""
+# Repository: {repo.name}
+# Full Name: {repo.full_name}
+# Description: {repo.description}
+# Language: {repo.language}
+ """
