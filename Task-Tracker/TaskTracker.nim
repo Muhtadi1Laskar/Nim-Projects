@@ -63,7 +63,7 @@ proc delete(list: TaskTracker, id: int) =
 
     var prevNode: Task = list.head
 
-    for i in 1..<id-1:
+    for i in 2..<id:
         prevNode = prevNode.next
     
     var nodeToDelete: Task = prevNode.next
@@ -107,7 +107,7 @@ when isMainModule:
 
     # tracker.printAllTask()
 
-    tracker.delete(1)
+    tracker.delete(5)
 
     echo "Updated List: \n"
 
