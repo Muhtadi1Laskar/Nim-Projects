@@ -41,6 +41,42 @@ proc append(list: TaskTracker, value: string) =
 
     return 
 
+proc updateID(list: TaskTracker) = 
+    var currentNode: Task = list.head
+    var index: int = 1
+
+    while not currentNode.isNil and index <= list.length:
+        currentNode.id = index
+        currentNode = currentNode.next
+        index += 1
+
+proc delete(list: TaskTracker, id: int) = 
+    if list.head.isNil:
+        echo "There is no task"
+        return
+
+    if id == 1:
+        list.head = list.head.next
+        list.length -= 1
+        list.updateID()
+        return
+
+    var prevNode: Task = list.head
+
+    for i in 1..<id-1:
+        prevNode = prevNode.next
+    
+    var nodeToDelete: Task = prevNode.next
+    prevNode.next = nodeToDelete.next
+
+    if id != list.length:
+        list.updateID()
+
+    list.length -= 1
+    return
+
+
+
 proc printAllTask(list: TaskTracker) = 
     if list.head.isNil:
         echo "There is no task"
@@ -59,7 +95,6 @@ proc printAllTask(list: TaskTracker) =
         currentNode = currentNode.next
     
 
-
 when isMainModule:
     var tracker: TaskTracker = newTracker()
 
@@ -69,5 +104,11 @@ when isMainModule:
     tracker.append("Clean the coffee machine")
     tracker.append("Take notes on system design interview")
     tracker.append("Watch the anime Sakamoto Days")
+
+    # tracker.printAllTask()
+
+    tracker.delete(1)
+
+    echo "Updated List: \n"
 
     tracker.printAllTask()
