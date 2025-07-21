@@ -1,3 +1,4 @@
+import strformat
 import ../Common/FileOperations
 
 type
@@ -51,6 +52,9 @@ proc updateID(list: TaskTracker) =
         index += 1
 
 proc delete(list: TaskTracker, id: int) = 
+    if id < 1 or id > list.length:
+        echo "There is no task associated with the given id \n"
+        return
     if list.head.isNil:
         echo "There is no task"
         return
@@ -76,23 +80,21 @@ proc delete(list: TaskTracker, id: int) =
     return
 
 
+proc printAllTasks(list: TaskTracker) =
+  if list.head.isNil:
+    echo "There is no task"
+    return
 
-proc printAllTask(list: TaskTracker) = 
-    if list.head.isNil:
-        echo "There is no task"
-        return
-
-    var currentNode: Task = list.head
-
-    while not currentNode.isNil:
-        echo "\nTask No. :", currentNode.id
-        echo "Description: ", currentNode.description
-        echo "Status: ", currentNode.status
-        echo "CreatedAt: ", currentNode.createdAt
-        echo "UpdatedAt: ", currentNode.updatedAt
-        echo ""
-
-        currentNode = currentNode.next
+  var currentNode = list.head
+  while not currentNode.isNil:
+    echo fmt"""
+Task No.    : {currentNode.id}
+Description: {currentNode.description}
+Status     : {currentNode.status}
+CreatedAt  : {currentNode.createdAt}
+UpdatedAt  : {currentNode.updatedAt}
+"""
+    currentNode = currentNode.next
     
 
 when isMainModule:
@@ -107,8 +109,8 @@ when isMainModule:
 
     # tracker.printAllTask()
 
-    tracker.delete(5)
+    tracker.delete(7)
 
     echo "Updated List: \n"
 
-    tracker.printAllTask()
+    tracker.printAllTasks()
