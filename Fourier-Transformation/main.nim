@@ -18,5 +18,3 @@ when isMainModule:
     let specturm = Dft(samples)
 
     echo specturm
-
-
